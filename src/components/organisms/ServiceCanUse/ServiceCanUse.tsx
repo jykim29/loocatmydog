@@ -32,23 +32,17 @@ const ServiceCanUse = ({ placeData }: any) => {
   }, []);
 
   return (
-    <PlaceSection title={'이용 가능 서비스'}>
-      <StyledServiceContainer>
-        {serviceList
-          ? serviceList.map((item: any, index: number, array: Object[]) => {
-              return (
-                <ButtonCheck
-                  key={item.name}
-                  title={item.name}
-                  isChecked={false}
-                >
-                  {item.text}
-                </ButtonCheck>
-              );
-            })
-          : ''}
-      </StyledServiceContainer>
-    </PlaceSection>
+    <StyledServiceContainer>
+      {serviceList
+        ? serviceList.map((item: any, index: number, array: Object[]) => {
+            return (
+              <ButtonCheck key={item.name} title={item.name} isChecked={false}>
+                {item.text}
+              </ButtonCheck>
+            );
+          })
+        : ''}
+    </StyledServiceContainer>
   );
 };
 
