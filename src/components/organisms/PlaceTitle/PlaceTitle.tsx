@@ -1,7 +1,7 @@
+import styled from 'styled-components';
 import StarRating from '@/components/atoms/StarRating/StarRating';
 import Tag from '@/components/atoms/Tag/Tag';
 import { maskingName } from '@/utils';
-import styled from 'styled-components';
 
 //type 지정
 interface PlaceUserInfoProps {

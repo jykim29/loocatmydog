@@ -1,6 +1,5 @@
 import ProfileImage from '@/components/atoms/ProfileImage/ProfileImage';
 import ImageSwiperContainer from '@/components/molecules/ImageSwiper/ImageSwiperContainer';
-import ImageSwiperSlide from '@/components/molecules/ImageSwiper/ImageSwiperSlide';
 import getPbImageURL from '@/utils/getPbImageURL';
 import styled from 'styled-components';
 
@@ -13,7 +12,6 @@ const StyledSwiperProfileContainer = styled.div`
     left: 10px;
   }
 `;
-const StyleUserProfileIcon = styled.div``;
 const SwiperProfile = ({ data }: { data: any }) => {
   const placeUser = data.expand.userId;
 

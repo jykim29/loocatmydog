@@ -279,6 +279,7 @@ export async function addPetFormAction({ request }: { request: any }) {
     await pb.from('users').update(user?.id, {
       'petId+': newPetData?.id,
     });
+    useAuthStore.getState().update();
     alert('반려동물 정보가 추가 되었습니다.');
   } catch (error) {
     console.log('Error while writing : ', error);

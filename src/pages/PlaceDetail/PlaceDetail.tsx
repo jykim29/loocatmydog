@@ -1,4 +1,6 @@
-import { PlacesResponse } from '@/@types/database';
+import { useEffect } from 'react';
+import { Link, useLoaderData } from 'react-router-dom';
+import styled from 'styled-components';
 import Button from '@/components/atoms/Button/Button';
 import PlaceSection from '@/components/molecules/PlaceSection/PlaceSection';
 import AnimalPick from '@/components/organisms/AnimalPick/AnimalPick';
@@ -13,11 +15,13 @@ import SwiperProfile from '@/components/organisms/SwiperProfile/SwiperProfile';
 import { useAuthStore } from '@/store/useAuthStore';
 import useDateRangeStore from '@/store/useDateRange';
 import useReservationStore from '@/store/useReservationStore';
-import { useEffect } from 'react';
-import { Link, useLoaderData } from 'react-router-dom';
-import styled from 'styled-components';
 import createChatRoom from '@/pages/ChatRoom/createChatRoom';
-import getPbImageURL from '@/utils/getPbImageURL';
+
+const StyledButtonContainer = styled.div`
+  padding: 0 20px;
+  display: flex;
+  justify-content: space-between;
+`;
 
 const PlaceDetail = () => {
   const { resetDateRange } = useDateRangeStore();
@@ -26,13 +30,10 @@ const PlaceDetail = () => {
   }, []);
   const { reservation } = useReservationStore();
   const placeData = useLoaderData() as any;
-
   const userData = useAuthStore.getState().user;
-  const StyledButtonContainer = styled.div`
-    padding: 0 20px;
-    display: flex;
-    justify-content: space-between;
-  `;
+  const reviewCount = placeData.expand['boards(placeId)']
+    ? placeData.expand['boards(placeId)'].length
+    : 0;
 
   // 문의하기
   const handleInquire = (e: MouseEvent) => {
@@ -46,24 +47,6 @@ const PlaceDetail = () => {
     );
   };
 
-  const ButtonContainer = () => {
-    return (
-      <StyledButtonContainer>
-        <Button size={'30%'} mode="chat" onClick={handleInquire}>
-          문의
-        </Button>
-        <Button
-          as={Link}
-          size="65%"
-          mode={reservation.reservationData ? 'normal' : 'disabled'}
-          to={`/payment/${placeData.id}`}
-          style={{ textAlign: 'center' }}
-        >
-          예약하기
-        </Button>
-      </StyledButtonContainer>
-    );
-  };
   return (
     <>
       <SwiperProfile data={placeData} />
@@ -78,16 +61,41 @@ const PlaceDetail = () => {
         tagList={placeData.tag}
         name={placeData.expand.userId.name}
       />
-      <PlaceSection title={''}>
+      <PlaceSection title="날짜 선택">
         <DatePick minDate={placeData.minDate} maxDate={placeData.maxDate} />
+      </PlaceSection>
+      <PlaceSection title="반려동물 선택">
         <AnimalPick />
+      </PlaceSection>
+      <PlaceSection title="이용 금액">
         <ServicePrice data={placeData} />
       </PlaceSection>
-      <PlaceLocation address={placeData.address} />
-      <PlaceIntroduce introduce={placeData.introduce} />
-      <ServiceCanUse placeData={placeData} />
-      <PlaceReview data={placeData} />
-      <ButtonContainer></ButtonContainer>
+      <PlaceSection title="플레이스 위치">
+        <PlaceLocation address={placeData.address} />
+      </PlaceSection>
+      <PlaceSection title="자기 소개">
+        <PlaceIntroduce introduce={placeData.introduce} />
+      </PlaceSection>
+      <PlaceSection title="이용 가능 서비스">
+        <ServiceCanUse placeData={placeData} />
+      </PlaceSection>
+      <PlaceSection title={`후기 ${reviewCount}개`}>
+        <PlaceReview data={placeData} />
+      </PlaceSection>
+      <StyledButtonContainer>
+        <Button size={'30%'} mode="chat" onClick={handleInquire}>
+          문의
+        </Button>
+        <Button
+          as={Link}
+          size="65%"
+          mode={reservation.reservationData ? 'normal' : 'disabled'}
+          to={`/payment/${placeData.id}`}
+          style={{ textAlign: 'center' }}
+        >
+          예약하기
+        </Button>
+      </StyledButtonContainer>
     </>
   );
 };

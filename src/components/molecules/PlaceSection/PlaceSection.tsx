@@ -15,12 +15,6 @@ const StyledPlaceSection = styled.div`
     color: ${(props) => props.theme.colors.textBlack};
     margin-bottom: 15px;
   }
-  & .borderLine {
-    block-size: 1px;
-    inline-size: 100%;
-    margin-top: 20px;
-    background: ${(props) => props.theme.colors.lineColorGray};
-  }
 `;
 
 const PlaceSection = ({ title, children, ...restProps }: PlaceSectionProps) => {
@@ -28,7 +22,6 @@ const PlaceSection = ({ title, children, ...restProps }: PlaceSectionProps) => {
     <StyledPlaceSection {...restProps}>
       <p className="sectionTitle">{title}</p>
       {children}
-      <div className="borderLine"></div>
     </StyledPlaceSection>
   );
 };

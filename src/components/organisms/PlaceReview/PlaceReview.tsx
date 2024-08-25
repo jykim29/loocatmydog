@@ -30,6 +30,10 @@ const StyledReviewPhoto = styled.figure`
   aspect-ratio: 1/1;
   border-radius: 4px;
   overflow: hidden;
+  & img {
+    height: 100%;
+    object-fit: cover;
+  }
 `;
 
 const ReviewPhoto = ({ src, alt }: ReviewPhotoProps) => {
@@ -41,38 +45,27 @@ const ReviewPhoto = ({ src, alt }: ReviewPhotoProps) => {
 };
 
 const PlaceReview = ({ data }: { data: any }) => {
-  console.log(data.expand['boards(placeId)']);
-  const reviewList = data.expand['boards(placeId)'];
-  // const imgList = [];
-  // reviewList?.map((item) => {
-  //   if (item.photo) {
-  //     imgList.push({ id: item.id, photo: item.photo });
-  //   }
-  //   imgList.push(...item.photo);
-  // });
-  // function photoRendering() {}
-  // console.log(imgList);
-
+  const reviewList = data?.expand['boards(placeId)'];
+  const images = reviewList
+    ? reviewList.map(
+        ({
+          collectionId,
+          id,
+          photo,
+        }: {
+          collectionId: string;
+          id: string;
+          photo: string;
+        }) => getPbImageURL(collectionId, id, photo[0])
+      )
+    : [];
   return (
     <StyledPlaceReview>
-      <p>
-        후기{' '}
-        {data.expand['boards(placeId)']
-          ? data.expand['boards(placeId)'].length
-          : 0}
-        개
-      </p>
       <StyledPhotoList>
-        {data.expand['boards(placeId)'] ? (
-          <>
-            <ReviewPhoto src="/images/story_sample1.jpg" alt="강아지" />
-            <ReviewPhoto src="/images/story_sample1.jpg" alt="강아지" />
-            <ReviewPhoto src="/images/story_sample1.jpg" alt="강아지" />
-            <ReviewPhoto src="/images/story_sample1.jpg" alt="강아지" />
-          </>
-        ) : (
-          <p>등록된 후기가 없습니다</p>
-        )}
+        {images.map((image: string, index: number) => (
+          <ReviewPhoto key={index} src={image} alt="리뷰" />
+        ))}
+        {images.length === 0 && <p>등록된 후기가 없습니다.</p>}
       </StyledPhotoList>
     </StyledPlaceReview>
   );

@@ -1,25 +1,21 @@
-import PlaceSection from '@/components/molecules/PlaceSection/PlaceSection';
-import styled from 'styled-components';
-import PocketBase from 'pocketbase';
 import { useEffect, useState } from 'react';
+import DOMPurify from 'dompurify';
+import PlaceSection from '@/components/molecules/PlaceSection/PlaceSection';
+import styled, { css } from 'styled-components';
 
-//test
-const placeId = '2h6cgg5ssvke4t1';
-
-//DB URL
-const API = import.meta.env.VITE_PB_API_URL;
-const pb = new PocketBase(API);
-
-async function fetchPlaceRecords() {
-  const record = await pb.collection('places').getOne(placeId, {
-    expand: 'userId',
-  });
-  return record;
+interface StyledMorePButtonProps {
+  $isShow: boolean;
 }
-fetchPlaceRecords();
-//type 지정
-
-const StyledMorePButton = styled.button`
+interface StyledIntroduceProps {
+  $isExpand: boolean;
+}
+const StyledMorePButton = styled.button<StyledMorePButtonProps>`
+  display: ${(props) => (props.$isShow ? 'none' : 'flex')};
+  border: 1px solid ${(props) => props.theme.colors.textDarkGray};
+  border-radius: 10px;
+  align-items: center;
+  padding: 4px;
+  margin: 0 auto;
   & span {
     ${(props) => props.theme.fontStyles.textRegularSm};
     color: ${(props) => props.theme.colors.textDarkGray};
@@ -34,44 +30,51 @@ const StyledMorePButton = styled.button`
   }
 `;
 
-const StyledIntroduce = styled.div`
+const StyledIntroduce = styled.div<StyledIntroduceProps>`
+  position: relative;
   ${(props) => props.theme.fontStyles.textRegularSm};
   color: ${(props) => props.theme.colors.textBlack};
   word-break: break-all;
   overflow: hidden;
   line-height: 1.5;
+  height: ${(props) => (props.$isExpand ? 'auto' : '100px')};
+  ${(props) =>
+    !props.$isExpand &&
+    css`
+      &::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        inline-size: 100%;
+        block-size: 100%;
+        background: linear-gradient(180deg, transparent 70%, #fff 100%);
+      }
+    `};
 `;
 
-const MorePButton = ({ ...restProps }) => {
-  return (
-    <StyledMorePButton type="button" {...restProps}>
-      <span>더보기</span>
-    </StyledMorePButton>
-  );
-};
-
 const PlaceIntroduce = ({ introduce }: { introduce: string }) => {
-  const [introPage, setIntroPage] = useState('10.5em');
-  const [introduceState, setIntroduceState] = useState('');
-  const [hidden, setHidden] = useState(false);
+  const [isExpand, setIsExpand] = useState<boolean>(false);
 
-  useEffect(() => {
-    setIntroduceState(introduce);
-    const intro = document.getElementById('beforeIntro');
-    intro?.insertAdjacentHTML('afterend', `${introduce}`);
-  }, [introduce]);
-
-  const showMorePage = () => {
-    setIntroPage('auto');
-    setHidden(!hidden);
+  const handleClickToggleExpand = () => {
+    setIsExpand(!isExpand);
   };
+
   return (
-    <PlaceSection title="자기 소개">
-      <StyledIntroduce id="introduce" style={{ blockSize: introPage }}>
-        <div id="beforeIntro"></div>
-      </StyledIntroduce>
-      <MorePButton hidden={hidden} onClick={showMorePage}></MorePButton>
-    </PlaceSection>
+    <>
+      <StyledIntroduce
+        $isExpand={isExpand}
+        id="introduce"
+        dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(introduce) }}
+      ></StyledIntroduce>
+      <StyledMorePButton
+        type="button"
+        $isShow={isExpand}
+        onClick={handleClickToggleExpand}
+      >
+        <span>더보기</span>
+      </StyledMorePButton>
+    </>
   );
 };
 

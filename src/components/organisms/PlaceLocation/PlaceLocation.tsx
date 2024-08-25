@@ -18,7 +18,6 @@ const KakaoMap = ({
   latitude: string;
   longitude: string;
 }) => {
-  console.log(latitude);
   useEffect(() => {
     const container = document.getElementById('map');
     const options = {
@@ -42,7 +41,6 @@ const KakaoMap = ({
 };
 
 const PlaceLocation = ({ address }: { address: string }) => {
-  console.log(address);
   const [latitude, setLatitude] = useState('');
   const [longitude, setLongitude] = useState('');
   async function getAddressData() {
@@ -51,11 +49,7 @@ const PlaceLocation = ({ address }: { address: string }) => {
     setLongitude(geolocationData.longitude);
   }
   getAddressData();
-  return (
-    <PlaceSection title={'플레이스 위치'}>
-      <KakaoMap latitude={latitude} longitude={longitude} />
-    </PlaceSection>
-  );
+  return <KakaoMap latitude={latitude} longitude={longitude} />;
 };
 
 export default PlaceLocation;

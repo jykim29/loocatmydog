@@ -86,11 +86,8 @@ interface PriceProps {
 }
 
 const ServicePrice = ({ data }: { data: any }) => {
-  console.log(data.priceSmall);
-
   return (
     <StyledServicePrice>
-      <p>이용 금액</p>
       <div className="priceWrapContainer">
         <PriceWrap size={'소형'} weight={'7kg 미만'} price={data.priceSmall} />
         <PriceWrap
