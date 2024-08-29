@@ -1,10 +1,7 @@
 import ReservationInfo from '@/components/organisms/ReservationInfo/ReservationInfo';
-import useReservationStore from '@/store/useReservationStore';
-import { getDay, getMonth } from 'date-fns';
+import { format } from 'date-fns';
 import styled from 'styled-components';
-import { useLoaderData, useNavigate } from 'react-router-dom';
-import pb from '@/api/pocketbase';
-import { useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import Button from '@/components/atoms/Button/Button';
 
 const StyledReservationDone = styled.div`
@@ -22,12 +19,8 @@ const StyledReservationDone = styled.div`
 `;
 
 const ReservationDone = () => {
-  const placeData = useLoaderData() as any;
   const navigate = useNavigate();
-  const [reservationData, setReservationData] = useState();
-  console.log(placeData.expand[`reservation(placeId)`]);
-  const reservData = placeData.expand[`reservation(placeId)`][0];
-
+  const { state } = useLocation();
   function handleClick() {
     return navigate('/main');
   }
@@ -39,10 +32,10 @@ const ReservationDone = () => {
         <p>플레이스와 함께하세요</p>
       </div>
       <ReservationInfo
-        mindate={`${getMonth(reservData.minDate) + 1}월 ${getDay(reservData.minDate)}일`}
-        maxdate={`${getMonth(reservData.maxDate) + 1}월 ${getDay(reservData.maxDate)}일`}
-        require={reservData.require}
-        etc={reservData.etc}
+        mindate={`${format(state.minDate, 'MM월 dd일')}`}
+        maxdate={`${format(state.maxDate, 'MM월 dd일')}`}
+        require={state.require}
+        etc={state.etc}
       />
       <Button
         size="100%"

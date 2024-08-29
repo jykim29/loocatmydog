@@ -29,6 +29,7 @@ const PlaceDetail = () => {
     return () => resetDateRange();
   }, []);
   const { reservation } = useReservationStore();
+  const isSelect = !!reservation.reservationData;
   const placeData = useLoaderData() as any;
   const userData = useAuthStore.getState().user;
   const reviewCount = placeData.expand['boards(placeId)']
@@ -87,9 +88,9 @@ const PlaceDetail = () => {
           문의
         </Button>
         <Button
-          as={Link}
+          as={isSelect ? Link : null}
           size="65%"
-          mode={reservation.reservationData ? 'normal' : 'disabled'}
+          mode={isSelect ? 'normal' : 'disabled'}
           to={`/payment/${placeData.id}`}
           style={{ textAlign: 'center' }}
         >

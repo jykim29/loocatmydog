@@ -98,7 +98,9 @@ const EventPopup = () => {
 
   useEffect(() => {
     const getBannerImages = async () => {
-      const response = await pb.from('events').getOne('xa406ln74v45u9v');
+      const response = await pb.from('events').getOne('xa406ln74v45u9v', {
+        requestKey: null,
+      });
       const popupImageUrl = response.popupImages?.map((filename) =>
         pb.files.getUrl(response, filename, { thumb: '500x0' })
       );

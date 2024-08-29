@@ -1,44 +1,35 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
-import { useAuthStore } from './useAuthStore';
 
 //type 지정
 interface InitialState {
-  reservation: Object;
+  reservation: {
+    reservationData: { [key: string]: any } | null;
+  };
 }
 
-interface ReservationStore extends InitialState {
-  reservation: {
-    [key: string]: any;
-  };
-  setReservation: (reservationData: Object) => void;
+interface Action {
+  setReservation: (data: Object) => void;
   resetReservation: () => void;
 }
-const userId = useAuthStore.getState().user?.id;
 const initialState: InitialState = {
   reservation: {
-    userId: userId,
-    date: [],
-    petId: [],
-    require: '',
-    etc: '',
+    reservationData: null,
   },
 };
 
-/* reservation : {
-  userId: '',
-  date: [,],
-  pet: [id1, id2],
-  required: '',
-  etc: '' 
-} */
-
-const useReservationStore = create<ReservationStore>()(
+const useReservationStore = create<InitialState & Action>()(
   devtools((set) => ({
     ...initialState,
-    setReservation: (reservationData) =>
-      set(() => ({ reservation: { reservationData } })),
-    resetReservation: () => set(() => ({ reservation: { initialState } })),
+    setReservation: (data) =>
+      set((state) => ({ ...state, reservation: { reservationData: data } })),
+    resetReservation: () =>
+      set((state) => ({
+        ...state,
+        reservation: {
+          reservationData: null,
+        },
+      })),
   }))
 );
 

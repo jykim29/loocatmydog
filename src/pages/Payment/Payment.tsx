@@ -7,17 +7,16 @@ import styled from 'styled-components';
 import { RequestPayParams, RequestPayResponse } from 'iamport-typings';
 import { useAuthStore } from '@/store/useAuthStore';
 import pb from '@/api/pocketbase';
-import { Link, redirect, useLoaderData, useNavigate } from 'react-router-dom';
+import {
+  Link,
+  Navigate,
+  redirect,
+  useLoaderData,
+  useNavigate,
+} from 'react-router-dom';
 import { maskingName } from '@/utils';
 import useReservationStore from '@/store/useReservationStore';
-import { getDay, getMonth, getWeek } from 'date-fns';
-//type 지정
-
-interface PaymentProps {
-  title?: string;
-  info?: string;
-  totalPrice?: number;
-}
+import { format, getDay, getMonth, getWeek } from 'date-fns';
 
 //style지정
 const StyledPaymentContainer = styled.div`
@@ -81,21 +80,19 @@ const StyledBanner = styled.div`
   block-size: 90px;
 `;
 
-const Payment = ({
-  title = '플레이스제목',
-  info = '서울 구로구 김*경',
-  totalPrice = 60000,
-}: PaymentProps) => {
+const Payment = () => {
   const placeData = useLoaderData() as any;
   const { reservation } = useReservationStore();
+  const reservationData = reservation.reservationData as any;
   const userData = useAuthStore.getState().user;
   const [isChecked, setIsChecked] = useState(false);
   const navigate = useNavigate();
 
-  const minDate = reservation.reservationData.date[0];
-  const maxDate = reservation.reservationData.date[1];
-  const { require, etc, petId } = reservation.reservationData;
-  const petData = userData?.expand.petId[0];
+  const [minDate, maxDate] = reservationData.date;
+  const { require, etc, petId } = reservationData;
+  const petData = userData?.expand.petId.find(
+    (value: any) => value.id === petId[0]
+  );
 
   useEffect(() => {
     const jquery = document.createElement('script');
@@ -112,18 +109,19 @@ const Payment = ({
 
   const onClickPayment = () => {
     if (!window.IMP) return;
+    if (!isChecked) return;
 
     const { IMP } = window;
     IMP.init(import.meta.env.VITE_PORTONE_STORE_CODE);
-    const InicisStoreId = import.meta.env.VITE_PORTONE_INICIS_STORE_ID;
+    const kakaoPayStoreId = import.meta.env.VITE_PORTONE_KAKAOPAY_STORE_ID;
 
     const userData = useAuthStore.getState().user;
 
     const data: RequestPayParams = {
-      pg: `html5_inicis.${InicisStoreId}`,
+      pg: `kakaopay.${kakaoPayStoreId}`,
       pay_method: 'card',
       merchant_uid: `mid_${new Date().getTime()}`,
-      name: placeData.title,
+      name: `봐주개냥 테스트 결제: ${placeData.title}`,
       amount: placeData.priceSmall, // 가격
       buyer_name: userData?.name,
       buyer_tel: userData?.phone,
@@ -135,24 +133,15 @@ const Payment = ({
   };
 
   const callback = async (response: RequestPayResponse) => {
-    const {
-      success = true,
-      error_msg,
-      imp_uid,
-      merchant_uid,
-      pay_method,
-      paid_amount,
-      status,
-    } = response;
-
+    const { success = true, error_msg } = response;
     if (success) {
       const userData = useAuthStore.getState().user;
       const reservationData = {
         placeId: placeData.id,
         userId: userData?.id,
         petId: petId,
-        minDate: minDate?.toISOString(),
-        maxDate: maxDate?.toISOString(),
+        minDate,
+        maxDate,
         reviewed: false,
         price: placeData.priceSmall,
         required: require,
@@ -162,7 +151,15 @@ const Payment = ({
       await pb.collection('reservation').create(reservationData);
 
       alert('결제 성공');
-      return navigate(`/reservation_done/${placeData.id}`);
+      return navigate(`/reservation_done/${placeData.id}`, {
+        replace: true,
+        state: {
+          minDate,
+          maxDate,
+          require,
+          etc,
+        },
+      });
     } else {
       alert(`결제 실패: ${error_msg}`);
     }
@@ -181,8 +178,8 @@ const Payment = ({
         </span>
         <div className="borderLine"></div>
         <ReservationInfo
-          mindate={`${getMonth(minDate) + 1}월 ${getDay(minDate)}일`}
-          maxdate={`${getMonth(maxDate) + 1}월 ${getDay(maxDate)}일`}
+          mindate={format(minDate, 'MM월 dd일')}
+          maxdate={format(maxDate, 'MM월 dd일')}
           require={require}
           etc={etc}
         />

@@ -1,15 +1,13 @@
 import { PetResponse } from '@/@types/database';
-import pb from '@/api/pocketbase';
 import Button from '@/components/atoms/Button/Button';
 import ProfileImage from '@/components/atoms/ProfileImage/ProfileImage';
 import InputTextArea from '@/components/molecules/InputTextArea/InputTextArea';
 import ProfileCard from '@/components/molecules/ProfileCard/ProfileCard';
 import useReservationStore from '@/store/useReservationStore';
-import useModalControlStore from '@/store/useModalControl';
 import { sizeWeight } from '@/utils';
 import getPbImageURL from '@/utils/getPbImageURL';
-import React, { ReactElement, useEffect, useRef, useState } from 'react';
-import { Form, Link } from 'react-router-dom';
+import React, { useEffect, useRef, useState } from 'react';
+import { Form } from 'react-router-dom';
 import styled from 'styled-components';
 import { useAuthStore } from '@/store/useAuthStore';
 import useDateRangeStore from '@/store/useDateRange';
@@ -115,7 +113,7 @@ const AnimalPick = () => {
     require: '',
     etc: '',
   });
-  const { setReservation, reservation } = useReservationStore();
+  const { setReservation } = useReservationStore();
 
   //pet validation
   useEffect(() => {
@@ -207,7 +205,6 @@ const AnimalPick = () => {
         </Form>
       </StyledAnimalPickModal>
       <StyledAnimalPickSection>
-        <p>반려동물 선택</p>
         <div
           style={{
             display: 'flex',

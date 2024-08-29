@@ -68,7 +68,7 @@ const StyledReservations = styled.div`
   }
 `;
 
-const Reservations = () => {
+export const Component = () => {
   // 로그인 유저 정보
   const currentUserData = useAuthStore.getState().user;
   const currentUserId = currentUserData?.id;
@@ -138,4 +138,4 @@ const Reservations = () => {
   );
 };
 
-export default Reservations;
+Component.displayName = 'Reservations';

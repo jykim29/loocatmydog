@@ -3,7 +3,6 @@ import { HeaderProps } from '@/components/molecules/Header/Header';
 import AddPet, { addPetFormAction } from '@/pages/AddPet/AddPet';
 import ChatRoom from '@/pages/ChatRoom/ChatRoom';
 import HeartList from '@/components/organisms/HeartList/HeartList';
-import Reservations from '@/pages/Reservations/Reservations';
 import Stories from '@/pages/Stories/Stories';
 import StoryWrite, { storyFormAction } from '@/pages/StoriesWrite/StoryWrite';
 import ModifyProfile, { edit } from '@/pages/ModifyProfile/ModifyProfile';
@@ -118,7 +117,6 @@ export const navigationItems: NavigationRouteObject[] = [
     path: '/reservation_done/:id',
     element: <ReservationDone />,
     headerType: ['popup', null],
-    loader: detail,
     withAuthorization: true,
   },
 
@@ -145,7 +143,7 @@ export const navigationItems: NavigationRouteObject[] = [
   },
   {
     path: '/reservation_list',
-    element: <Reservations />,
+    lazy: () => import('../pages/Reservations/Reservations'),
     headerType: ['logo', null],
     withAuthorization: true,
   },

@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useMemo, useCallback } from 'react';
 import { Link, useLoaderData } from 'react-router-dom';
 import { useInView } from 'framer-motion';
+import styled from 'styled-components';
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 
 import useDateRangeStore from '@/store/useDateRange';
@@ -44,9 +45,38 @@ const shortcutMenuObject = [
   },
 ];
 
+const StyledTopButton = styled.div`
+  position: sticky;
+  bottom: 50px;
+  z-index: 10;
+
+  & > button {
+    display: block;
+    width: 50px;
+    height: 50px;
+    padding-top: 10px;
+    border-radius: 50%;
+    background-color: ${(props) => props.theme.colors.orange};
+    background-image: url('/images/arrow/arrowUp.svg');
+    background-repeat: no-repeat;
+    background-position: center 8px;
+    background-size: 15px;
+    color: ${(props) => props.theme.colors.white};
+    border: 2px solid ${(props) => props.theme.colors.orange};
+    margin-left: auto;
+    margin-right: 15px;
+    transition: all 0.3s;
+    &:hover {
+      background-color: ${(props) => props.theme.colors.white};
+      color: ${(props) => props.theme.colors.orange};
+    }
+  }
+`;
+
 export function Component() {
-  const ref = useRef(null);
-  const isInView = useInView(ref);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const inViewRef = useRef(null);
+  const isInView = useInView(inViewRef, { amount: 0.8 });
   const { resetDateRange } = useDateRangeStore();
   const { isShowModal, resetModal } = useModalControlStore();
   const { sortOptions, setSortOptions, sortString } = usePlaceSort();
@@ -109,15 +139,18 @@ export function Component() {
   }, []);
 
   useEffect(() => {
-    if (isInView) fetchNextPage();
+    if (isInView) {
+      setTimeout(() => {
+        fetchNextPage();
+      }, 500);
+    }
   }, [isInView]);
 
   useEffect(() => {
     queryClient.resetQueries({ queryKey: queryKey });
   }, [queryKey]);
-
   return (
-    <S.MainContainer>
+    <S.MainContainer ref={containerRef}>
       <A11yHidden as="h2" className="section-title">
         이벤트 배너
       </A11yHidden>
@@ -166,7 +199,6 @@ export function Component() {
         </h2>
         <div className="section-content">
           {placeListData?.map((item) => {
-            const myData = useAuthStore.getState().user;
             const shortAddress = item.address.split(' ').slice(0, 2).join(' ');
             return (
               <Place
@@ -186,12 +218,26 @@ export function Component() {
         </div>
       </S.MainSection>
       {hasNextPage ? (
-        <PetSpinner ref={ref} />
+        <PetSpinner ref={inViewRef} />
       ) : (
-        <div ref={ref} role="none"></div>
+        <div ref={inViewRef} role="none"></div>
       )}
       {isShowModal.sideMenu &&
         createPortal(<SideMenu />, document.getElementById('modal')!)}
+      <StyledTopButton>
+        <button
+          type="button"
+          onClick={() => {
+            if (!containerRef.current?.parentElement) return;
+            containerRef.current.parentElement.scrollTo({
+              top: 0,
+              behavior: 'smooth',
+            });
+          }}
+        >
+          TOP
+        </button>
+      </StyledTopButton>
     </S.MainContainer>
   );
 }

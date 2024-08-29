@@ -82,7 +82,6 @@ const getReservations = async (userId: string) => {
       e.stopPropagation();
       e.preventDefault();
       location.href = `/review/post/${data.placeId}`;
-      console.log(1);
     };
 
     return leftDay === 'past' ? (
