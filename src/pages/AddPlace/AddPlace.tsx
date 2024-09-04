@@ -1,21 +1,16 @@
-import BigPhoto from '@/components/atoms/BigPhoto/BigPhoto';
-import InputWrapper from '@/components/atoms/InputWrapper/InputWrapper';
-import { Form, redirect } from 'react-router-dom';
-import styled from 'styled-components';
 import Button from '@/components/atoms/Button/Button';
-import Calendar from '@/components/atoms/Calendar/Calendar';
-import AnimalRateInput from '@/components/molecules/AnimalRateInput/AnimalRateInput';
 import ButtonCheck from '@/components/atoms/ButtonCheck/ButtonCheck';
-import { service } from '@/data/service';
-import React, { ChangeEvent, useState } from 'react';
-import Modal from 'react-modal';
-import DaumPostcode from 'react-daum-postcode';
+import Calendar from '@/components/atoms/Calendar/Calendar';
+import InputWrapper from '@/components/atoms/InputWrapper/InputWrapper';
+import AnimalRateInput from '@/components/molecules/AnimalRateInput/AnimalRateInput';
 import ImageSwiperContainer from '@/components/molecules/ImageSwiper/ImageSwiperContainer';
-import pb from '@/api/pocketbase';
-import { useAuthStore } from '@/store/useAuthStore';
+import { service } from '@/data/service';
 import useDateRangeStore from '@/store/useDateRange';
-import { PlacesResponse } from '@/@types/database';
-import { AnyComponent } from 'styled-components/dist/types';
+import React, { useState } from 'react';
+import DaumPostcode from 'react-daum-postcode';
+import Modal from 'react-modal';
+import { Form } from 'react-router-dom';
+import styled from 'styled-components';
 
 const StyledAddSection = styled.div`
   padding: 20px 20px 0;
@@ -121,56 +116,21 @@ const StyledMultiplePhotoInputContainer = styled.div`
     }
   }
 `;
-// multi imageFiles container
-const imageFiles: FileList[] = [];
-//service container
-let serviceListData: Array<string> = [];
-//date container
-let dateData: Array<Date | null> = [];
 
-const AddPlace = () => {
+export const AddPlace = () => {
   const { dateRange } = useDateRangeStore();
-  function dateContainer() {
-    dateData = [dateRange[0], dateRange[1]];
-  }
-  dateContainer();
   const [showImages, setShowImages] = useState<string[]>([]);
-  const serviceList = Object.values(service[0]);
-  const servicekeys = Object.keys(service[0]);
   const [isOpen, setIsOpen] = useState(false);
   const [roadAddress, setRoadAddress] = useState('');
   const [isEditingAddress, setIsEditingAddress] = useState(false);
-  // const [isChecked, setIsChecked] = useState(false);
-  let isChecked = false;
-
-  //serviceList select 생성
-  const addServiceList = (e: React.ChangeEvent<HTMLInputElement>) => {
-    !isChecked;
-    serviceListData = [];
-
-    if (isChecked) {
-      e.target.checked = isChecked;
-      !isChecked;
-    }
-    const data = new FormData();
-    const form = document.getElementById('placeForm');
-    const services = form?.querySelectorAll('input[type="checkbox"]');
-    services?.forEach((item: Element, key: number) => {
-      if (item instanceof HTMLInputElement && item.checked) {
-        serviceListData.push(item.value);
-      }
-    });
-  };
+  const serviceList = Object.entries(service);
 
   // 이미지 상대경로 저장
   const handleAddImages = (e: React.ChangeEvent<HTMLInputElement>) => {
     const imageLists = e.target.files;
-    let imageUrlLists: string[] = [...showImages];
-
-    let file;
-    if (e.target.files && e.target.files[0]) {
-      file = e.target.files;
-      imageFiles.push(file);
+    const imageUrlLists: string[] = [...showImages];
+    if (imageUrlLists.length > 10) {
+      return alert('이미지 등록은 10개까지만 가능합니다');
     }
 
     if (imageLists) {
@@ -178,11 +138,6 @@ const AddPlace = () => {
         const currentImageUrl = URL.createObjectURL(imageLists[i]);
         imageUrlLists.push(currentImageUrl);
       }
-    }
-
-    if (imageUrlLists.length > 10) {
-      imageUrlLists = imageUrlLists.slice(0, 10);
-      alert('이미지 등록은 10개까지만 가능합니다');
     }
 
     setShowImages(imageUrlLists);
@@ -219,14 +174,14 @@ const AddPlace = () => {
         />
       </StyledAddSection>
       <StyledAddSection>
-        <p className="sectionTitle">환경태그</p>
+        <p className="sectionTitle">태그</p>
         <div className="innerWrapper">
           <span>태그명</span>
           <InputWrapper name="tag" unit="" placeholder="#로 구분가능" />
         </div>
       </StyledAddSection>
       <StyledAddSection>
-        <p className="sectionTitle">환경태그</p>
+        <p className="sectionTitle">주소</p>
         <div className="innerWrapper" style={{ alignItems: 'end' }}>
           <InputWrapper
             name="address"
@@ -243,17 +198,6 @@ const AddPlace = () => {
             검색
           </Button>
         </div>
-        {/* {roadAddress ? (
-          <InputWrapper
-            name="addressDetail"
-            unit=""
-            placeholder="상세주소를 써주세요"
-            onChange={changeHandler}
-            value={detailAddress}
-          />
-        ) : (
-          ''
-        )} */}
       </StyledAddSection>
       <StyledAddSection>
         <p className="sectionTitle">가능한 날짜 선택</p>
@@ -262,22 +206,21 @@ const AddPlace = () => {
       </StyledAddSection>
       <StyledAddSection>
         <p className="sectionTitle">이용금액</p>
-        <AnimalRateInput size="소형" name="small" />
-        <AnimalRateInput size="중형" name="middle" />
-        <AnimalRateInput size="대형" name="large" />
+        <AnimalRateInput size="소형" name="priceSmall" />
+        <AnimalRateInput size="중형" name="priceMiddle" />
+        <AnimalRateInput size="대형" name="priceLarge" />
       </StyledAddSection>
       <StyledAddSection>
         <div className="buttonWrapper">
-          {serviceList.map((item, index) => {
+          {serviceList.map(([key, value]) => {
             return (
               <ButtonCheck
-                key={item.name}
+                key={value.name}
                 name="service"
-                title={item.name}
-                value={servicekeys[index]}
-                onChange={addServiceList}
+                title={value.name}
+                value={key}
               >
-                {item.text}
+                {value.text}
               </ButtonCheck>
             );
           })}
@@ -303,47 +246,3 @@ const AddPlace = () => {
     </Form>
   );
 };
-
-export default AddPlace;
-
-export async function placeFormAction({ request }: { request: any }) {
-  const formData = await request.formData();
-
-  const userId = useAuthStore.getState().user?.id;
-
-  const tag = formData.get('tag').match(/[^,]+/g);
-  const service = serviceListData;
-  const minDate = dateData[0];
-  const maxDate = dateData[1];
-  const imgData = [];
-  for (let i = 0; i < imageFiles[0]?.length; i++) {
-    imgData.push(imageFiles[0][i]);
-  }
-
-  const eventData: any = {
-    title: formData.get('title'),
-    tag: JSON.stringify(tag),
-    address: formData.get('address'),
-    userId: userId,
-    minDate: minDate?.toISOString(),
-    maxDate: maxDate?.toISOString(),
-    service: service,
-    priceSmall: formData.get('small'),
-    priceMiddle: formData.get('middle'),
-    priceLarge: formData.get('large'),
-    photo: imgData,
-    introduce: formData.get('introduce'),
-  };
-
-  try {
-    const updatedUser = await pb.from('places').create(eventData);
-    // 메모리 비우기
-    imageFiles.splice(0, imageFiles.length);
-
-    alert('플레이스 등록이 완료됐습니다.');
-  } catch (error) {
-    console.log('Error while writing : ', error);
-  }
-
-  return redirect('/main');
-}

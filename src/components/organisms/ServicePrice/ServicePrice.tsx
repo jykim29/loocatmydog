@@ -1,7 +1,6 @@
 import PetIcon from '@/components/atoms/PetIcon/PetIcon';
-import styled from 'styled-components';
 import PocketBase from 'pocketbase';
-import { useEffect, useState } from 'react';
+import styled from 'styled-components';
 
 //test
 
@@ -73,7 +72,7 @@ const PriceWrap = ({ size, weight, price }: PriceWrapProps) => {
         <span>{weight}</span>
       </div>
       <p className={`${price ? 'price' : 'none'}`}>
-        {price ? `${price}원` : '예약불가'}
+        {price ? `${price.toLocaleString('ko-KR')}원` : '예약불가'}
       </p>
     </StyledPriceWrap>
   );

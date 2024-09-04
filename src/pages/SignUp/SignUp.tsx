@@ -1,11 +1,11 @@
+import { useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import pb from '@/api/pocketbase';
 import SignUpAddress from '@/components/organisms/SignUp/SignUpAddress';
 import SignUpAgree from '@/components/organisms/SignUp/SignUpAgree';
 import SignUpEmail from '@/components/organisms/SignUp/SignUpEmail';
 import SignUpPhone from '@/components/organisms/SignUp/SignUpPhone';
 import { useAuthStore } from '@/store/useAuthStore';
-import React, { useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
 
 interface FormData {
   email: string;
@@ -39,7 +39,7 @@ const INITIAL_DATA: FormData = {
   longitude: '',
 };
 
-const SignUp = () => {
+export const SignUp = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const socialLoginData = location.state?.data;
@@ -149,5 +149,3 @@ const SignUp = () => {
     <form onSubmit={(e) => handleSubmit(e)}>{steps[currentStepIndex]}</form>
   );
 };
-
-export default SignUp;

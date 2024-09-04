@@ -1,34 +1,33 @@
-import React, { useEffect, useRef, useMemo, useCallback } from 'react';
-import { Link, useLoaderData } from 'react-router-dom';
-import { useInView } from 'framer-motion';
-import styled from 'styled-components';
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
+import { useInView } from 'framer-motion';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+import { Link, useLoaderData } from 'react-router-dom';
+import styled from 'styled-components';
 
-import useDateRangeStore from '@/store/useDateRange';
-import ImageSwiperContainer from '@/components/molecules/ImageSwiper/ImageSwiperContainer';
+import { queryClient } from '@/app/App';
 import A11yHidden from '@/components/A11yHidden/A11yHidden';
+import DropDown from '@/components/atoms/DropDown/DropDown';
+import MoreButton from '@/components/atoms/MoreButton/MoreButton';
 import HotPlace from '@/components/molecules/HotPlace/HotPlace';
 import ContentSwiperContainer from '@/components/molecules/ImageSwiper/ContentSwiperContainer';
-import MoreButton from '@/components/atoms/MoreButton/MoreButton';
-import DropDown from '@/components/atoms/DropDown/DropDown';
+import ImageSwiperContainer from '@/components/molecules/ImageSwiper/ImageSwiperContainer';
+import PetSpinner from '@/components/molecules/LoadingSpinner/PetSpinner';
 import Place from '@/components/molecules/Place/Place';
 import ShortcutMenu from '@/components/molecules/ShortcutMenu/ShortcutMenu';
-import * as S from './StyledMain';
-import { useAuthStore } from '@/store/useAuthStore';
+import SideMenu from '@/components/organisms/SideMenu/SideMenu';
+import usePlaceSort, {
+  InitialSortType,
+  initialState as initialSortItems,
+} from '@/hooks/usePlaceSort';
+import useDateRangeStore from '@/store/useDateRange';
+import useModalControlStore from '@/store/useModalControl';
 import {
   getPlaceInfiniteQueryOptions,
   getPlaceQueryOptions,
   setDailyPopup,
 } from '@/utils';
-import usePlaceSort, {
-  InitialSortType,
-  initialState as initialSortItems,
-} from '@/hooks/usePlaceSort';
-import { queryClient } from '@/app/App';
 import { createPortal } from 'react-dom';
-import SideMenu from '@/components/organisms/SideMenu/SideMenu';
-import useModalControlStore from '@/store/useModalControl';
-import PetSpinner from '@/components/molecules/LoadingSpinner/PetSpinner';
+import * as S from './StyledMain';
 
 const shortcutMenuObject = [
   {
@@ -142,7 +141,7 @@ export function Component() {
     if (isInView) {
       setTimeout(() => {
         fetchNextPage();
-      }, 500);
+      }, 300);
     }
   }, [isInView]);
 

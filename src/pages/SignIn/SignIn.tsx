@@ -1,11 +1,9 @@
-import pb from '@/api/pocketbase';
+import React, { useState } from 'react';
+import { Form } from 'react-router-dom';
+import styled from 'styled-components';
 import Button from '@/components/atoms/Button/Button';
 import FormInput from '@/components/molecules/FormInput/FormInput';
-import { useAuthStore } from '@/store/useAuthStore';
 import { isEmail, isValidPassword } from '@/utils/signUpValidation';
-import React, { useState } from 'react';
-import { Form, redirect } from 'react-router-dom';
-import styled from 'styled-components';
 
 const StyledSignIn = styled.div`
   padding-inline: 20px;
@@ -35,7 +33,7 @@ const StyledSignIn = styled.div`
   }
 `;
 
-const SignIn = () => {
+export const SignIn = () => {
   const [inputValue, setInputValue] = useState({
     email: '',
     password: '',
@@ -142,23 +140,4 @@ const SignIn = () => {
   );
 };
 
-export default SignIn;
-
-// submit action 함수
-export async function signInFormAction({ request }: { request: any }) {
-  const formData = await request.formData();
-
-  const email = formData.get('email');
-  const password = formData.get('password');
-
-  try {
-    await useAuthStore.getState().signIn(email, password);
-
-    alert('로그인 성공');
-    return redirect('/main');
-  } catch (error) {
-    console.log('로그인 실패 : ', error);
-    alert('아이디, 비밀번호를 확인해주세요.');
-    return null;
-  }
-}
+SignIn.displayName = 'SignIn';

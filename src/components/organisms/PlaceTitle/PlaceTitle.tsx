@@ -72,9 +72,10 @@ const PlaceTitleSection = ({
         name={name}
       ></PlaceUserInfo>
       <StyledTagContainer>
-        {tagList.map((tag: string) => {
-          return <Tag key={tag}>{tag}</Tag>;
-        })}
+        {tagList &&
+          tagList.map((tag: string) => {
+            return <Tag key={tag}>{tag}</Tag>;
+          })}
       </StyledTagContainer>
     </StyledPlaceTitle>
   );

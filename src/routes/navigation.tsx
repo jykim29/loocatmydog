@@ -2,24 +2,19 @@ import { queryClient } from '@/app/App';
 import { HeaderProps } from '@/components/molecules/Header/Header';
 import AddPet, { addPetFormAction } from '@/pages/AddPet/AddPet';
 import ChatRoom from '@/pages/ChatRoom/ChatRoom';
-import HeartList from '@/components/organisms/HeartList/HeartList';
-import Stories from '@/pages/Stories/Stories';
-import StoryWrite, { storyFormAction } from '@/pages/StoriesWrite/StoryWrite';
 import ModifyProfile, { edit } from '@/pages/ModifyProfile/ModifyProfile';
 import MyPage from '@/pages/MyPage/MyPage';
 import Settings from '@/pages/Settings/Settings';
+import Stories from '@/pages/Stories/Stories';
+import StoryWrite, { storyFormAction } from '@/pages/StoriesWrite/StoryWrite';
 
 import ChatList from '@/pages/ChatList/ChatList';
-import Landing from '@/pages/Landing/Landing';
+import NotFoundPage from '@/pages/NotFoundPage/NotFoundPage';
+import Payment from '@/pages/Payment/Payment';
 import PlaceDetail from '@/pages/PlaceDetail/PlaceDetail';
 import { loader as detail } from '@/pages/PlaceDetail/loader';
-import SignIn, { signInFormAction } from '@/pages/SignIn/SignIn';
-import SignUp from '@/pages/SignUp/SignUp';
-import { RouteObject } from 'react-router-dom';
-import NotFoundPage from '@/pages/NotFoundPage/NotFoundPage';
-import AddPlace, { placeFormAction } from '@/pages/AddPlace/AddPlace';
-import Payment from '@/pages/Payment/Payment';
 import ReservationDone from '@/pages/ReservationDone/ReservationDone';
+import { RouteObject } from 'react-router-dom';
 
 type NavigationRouteObject = RouteObject & {
   headerType?: [HeaderProps['type'], HeaderProps['title']];
@@ -30,20 +25,25 @@ export const navigationItems: NavigationRouteObject[] = [
   // 지우님
   {
     path: '/',
-    element: <Landing />,
+    lazy: () => import('@/pages/Landing/Landing'),
     index: true,
     withAuthorization: false,
   },
   {
     path: '/signin',
-    element: <SignIn />,
-    action: signInFormAction,
+    async lazy() {
+      const { SignIn: Component, action } = await import('@/pages/SignIn');
+      return { Component, action };
+    },
     headerType: ['back', null],
     withAuthorization: false,
   },
   {
     path: '/signup',
-    element: <SignUp />,
+    async lazy() {
+      const { SignUp: Component } = await import('@/pages/SignUp/SignUp');
+      return { Component };
+    },
     withAuthorization: false,
   },
   // 종연님
@@ -89,9 +89,11 @@ export const navigationItems: NavigationRouteObject[] = [
   // 경화님
   {
     path: '/add_place',
-    element: <AddPlace />,
+    async lazy() {
+      const { AddPlace: Component, action } = await import('@/pages/AddPlace');
+      return { Component, action };
+    },
     headerType: ['back', '플레이스 등록'],
-    action: placeFormAction,
     withAuthorization: true,
   },
   {

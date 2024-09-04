@@ -1,6 +1,5 @@
-import { useEffect, useState } from 'react';
 import DOMPurify from 'dompurify';
-import PlaceSection from '@/components/molecules/PlaceSection/PlaceSection';
+import { useState } from 'react';
 import styled, { css } from 'styled-components';
 
 interface StyledMorePButtonProps {
@@ -10,7 +9,7 @@ interface StyledIntroduceProps {
   $isExpand: boolean;
 }
 const StyledMorePButton = styled.button<StyledMorePButtonProps>`
-  display: ${(props) => (props.$isShow ? 'none' : 'flex')};
+  display: ${(props) => (props.$isShow ? 'flex' : 'none')};
   border: 1px solid ${(props) => props.theme.colors.textDarkGray};
   border-radius: 10px;
   align-items: center;
@@ -37,7 +36,7 @@ const StyledIntroduce = styled.div<StyledIntroduceProps>`
   word-break: break-all;
   overflow: hidden;
   line-height: 1.5;
-  height: ${(props) => (props.$isExpand ? 'auto' : '100px')};
+  max-height: ${(props) => (props.$isExpand ? 'auto' : '100px')};
   ${(props) =>
     !props.$isExpand &&
     css`
@@ -55,7 +54,7 @@ const StyledIntroduce = styled.div<StyledIntroduceProps>`
 
 const PlaceIntroduce = ({ introduce }: { introduce: string }) => {
   const [isExpand, setIsExpand] = useState<boolean>(false);
-
+  const isMoreButtonShow = introduce.length > 50 && !isExpand;
   const handleClickToggleExpand = () => {
     setIsExpand(!isExpand);
   };
@@ -69,7 +68,7 @@ const PlaceIntroduce = ({ introduce }: { introduce: string }) => {
       ></StyledIntroduce>
       <StyledMorePButton
         type="button"
-        $isShow={isExpand}
+        $isShow={isMoreButtonShow}
         onClick={handleClickToggleExpand}
       >
         <span>더보기</span>

@@ -1,25 +1,25 @@
-import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useInfiniteQuery } from '@tanstack/react-query';
-import { useInView } from 'framer-motion';
-import { useLoaderData, useLocation, useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
+import { useInView } from 'framer-motion';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useLoaderData, useLocation, useNavigate } from 'react-router-dom';
 
+import { queryClient } from '@/app/App';
 import A11yHidden from '@/components/A11yHidden/A11yHidden';
-import * as S from '@/pages/PlaceList/StyledPlaceList';
+import Calendar from '@/components/atoms/Calendar/Calendar';
 import DropDown from '@/components/atoms/DropDown/DropDown';
 import FilterButton from '@/components/atoms/FilterButton/FilterButton';
+import PetSpinner from '@/components/molecules/LoadingSpinner/PetSpinner';
 import Place from '@/components/molecules/Place/Place';
-import { useAuthStore } from '@/store/useAuthStore';
-import Calendar from '@/components/atoms/Calendar/Calendar';
-import { getPlaceInfiniteQueryOptions } from '@/utils';
 import usePlaceFilter from '@/hooks/usePlaceFilter';
-import { queryClient } from '@/app/App';
 import usePlaceSort, {
   InitialSortType,
   initialState as initialSortItems,
 } from '@/hooks/usePlaceSort';
+import * as S from '@/pages/PlaceList/StyledPlaceList';
+import { useAuthStore } from '@/store/useAuthStore';
 import useDateRangeStore from '@/store/useDateRange';
-import PetSpinner from '@/components/molecules/LoadingSpinner/PetSpinner';
+import { getPlaceInfiniteQueryOptions } from '@/utils';
 
 export function Component() {
   const ref = useRef(null);
@@ -66,7 +66,7 @@ export function Component() {
       sort: sortString,
     }),
   });
-  let placeListData = cachedPlaceData
+  const placeListData = cachedPlaceData
     ? cachedPlaceData.pages.flatMap((data) => data.items)
     : [];
 
@@ -98,9 +98,11 @@ export function Component() {
 
   useEffect(() => {
     if (isInView) {
-      fetchNextPage();
+      setTimeout(() => {
+        fetchNextPage();
+      }, 300);
     }
-  }, [isInView, fetchNextPage]);
+  }, [isInView]);
 
   return (
     <S.MainContainer>

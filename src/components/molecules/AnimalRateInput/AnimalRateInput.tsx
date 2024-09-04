@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import CheckBox from './../../atoms/CheckBox/CheckBox';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import InputWrapper from '@/components/atoms/InputWrapper/InputWrapper';
 
 //type 정의
@@ -39,12 +39,8 @@ const AnimalRateInput = ({
   ...restProps
 }: AnimalRateInputProps) => {
   const [isChecked, setIsChecked] = useState(false);
-  const [price, setPrice] = useState<undefined | string>();
 
   const handleChange = () => setIsChecked(!isChecked);
-  const handlePrice = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPrice(e.target.value);
-  };
   return (
     <StyledAnimalRateInput {...restProps}>
       <span className="span-title">{size}</span>
@@ -52,8 +48,6 @@ const AnimalRateInput = ({
         type="number"
         placeholder={isChecked ? '-' : '단위) 천'}
         name={name}
-        value={isChecked ? '-' : price}
-        onChange={handlePrice}
         disabled={isChecked}
         required={size === '소형' ? true : false}
       />

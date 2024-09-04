@@ -57,7 +57,7 @@ const StyledLanding = styled.div`
   }
 `;
 
-const Landing = () => {
+export const Component = () => {
   const navigate = useNavigate();
 
   async function handleClickSocialLogin(provider: string) {
@@ -124,4 +124,4 @@ const Landing = () => {
   );
 };
 
-export default Landing;
+Component.displayName = 'Landing';
