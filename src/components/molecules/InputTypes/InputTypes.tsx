@@ -1,7 +1,7 @@
 import InputWrapper from '@/components/atoms/InputWrapper/InputWrapper';
 import styled from 'styled-components';
 import CheckBox from './../../atoms/CheckBox/CheckBox';
-import React, { ChangeEventHandler, useState } from 'react';
+import { ChangeEventHandler, useState } from 'react';
 //type 정의
 interface InputTypesProps {
   check?: boolean;

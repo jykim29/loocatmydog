@@ -6,7 +6,7 @@ import AnimalRateInput from '@/components/molecules/AnimalRateInput/AnimalRateIn
 import ImageSwiperContainer from '@/components/molecules/ImageSwiper/ImageSwiperContainer';
 import { service } from '@/data/service';
 import useDateRangeStore from '@/store/useDateRange';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import DaumPostcode from 'react-daum-postcode';
 import Modal from 'react-modal';
 import { Form } from 'react-router-dom';

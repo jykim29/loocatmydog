@@ -1,6 +1,6 @@
+import { useState } from 'react';
 import pb from '@/api/pocketbase';
 import debounce from '@/utils/debounce';
-import React, { useState } from 'react';
 
 // defaultCalue: 초기값
 // validationFn: 각 input에 사용되는 유효성 검사 function

@@ -1,4 +1,4 @@
-import React, { Suspense, useLayoutEffect, useRef } from 'react';
+import { Suspense, useLayoutEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import LoadingSpinner from '../molecules/LoadingSpinner/LoadingSpinner';

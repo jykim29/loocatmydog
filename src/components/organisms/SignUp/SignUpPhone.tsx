@@ -1,3 +1,5 @@
+import { useEffect, useState } from 'react';
+import styled from 'styled-components';
 import Button from '@/components/atoms/Button/Button';
 import { useInput } from '@/hooks/useInput';
 import { getRandomNumber } from '@/utils';
@@ -7,8 +9,6 @@ import {
   isName,
   isPhoneNum,
 } from '@/utils/signUpValidation';
-import React, { useEffect, useState } from 'react';
-import styled from 'styled-components';
 import FormInput from '../../molecules/FormInput/FormInput';
 import SignUpHeader from './SignUpHeader';
 

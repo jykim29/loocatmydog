@@ -1,6 +1,6 @@
 import useDateRangeStore from '@/store/useDateRange';
 import { format } from 'date-fns';
-import React, { forwardRef } from 'react';
+import { forwardRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 

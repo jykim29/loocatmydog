@@ -1,4 +1,4 @@
-import React, { ReactNode, useEffect, useState } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import styled, { css } from 'styled-components';
 import { format } from 'date-fns';
 import A11yHidden from '@/components/A11yHidden/A11yHidden';
@@ -196,7 +196,7 @@ const StoryCard = ({
     await pb.collection('boards').delete(id);
   };
 
-  const handleDeleteStory = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleDeleteStory = () => {
     deleteStory(id).then(() => {
       location.reload();
     });

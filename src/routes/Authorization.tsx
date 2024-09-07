@@ -1,6 +1,5 @@
-import { useAuthStore } from '@/store/useAuthStore';
-import React from 'react';
 import { Navigate } from 'react-router-dom';
+import { useAuthStore } from '@/store/useAuthStore';
 
 interface AuthorizationProps {
   redirectTo: string;

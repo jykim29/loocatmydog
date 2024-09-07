@@ -1,9 +1,9 @@
-import Button from '@/components/atoms/Button/Button';
-import getGeolocation from '@/utils/getGeolocation';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import DaumPostcode from 'react-daum-postcode';
 import Modal from 'react-modal';
 import styled from 'styled-components';
+import Button from '@/components/atoms/Button/Button';
+import getGeolocation from '@/utils/getGeolocation';
 import FormInput from '../../molecules/FormInput/FormInput';
 import SignUpHeader from './SignUpHeader';
 

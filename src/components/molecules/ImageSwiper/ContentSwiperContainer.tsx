@@ -1,7 +1,6 @@
 import styled, { RuleSet } from 'styled-components';
 import { register } from 'swiper/element/bundle';
 import HeartButton from '@/components/atoms/HeartButton/HeartButton';
-import React from 'react';
 
 interface SwiperParams {
   [key: string]: string | number | boolean;

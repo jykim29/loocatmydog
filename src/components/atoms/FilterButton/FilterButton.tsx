@@ -1,5 +1,5 @@
 import A11yHidden from '@/components/A11yHidden/A11yHidden';
-import React, { useId } from 'react';
+import { useId } from 'react';
 import styled from 'styled-components';
 
 const StyledFilterCheck = styled.label`

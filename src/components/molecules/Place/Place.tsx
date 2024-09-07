@@ -1,13 +1,10 @@
-import StarRating from '@/components/atoms/StarRating/StarRating';
-import styled from 'styled-components';
-import StateBadge from './../../atoms/StateBadge/StateBadge';
 import HeartButton from '@/components/atoms/HeartButton/HeartButton';
-import React from 'react';
-import { comma, toggleBookmark } from '@/utils';
+import StarRating from '@/components/atoms/StarRating/StarRating';
+import { comma } from '@/utils';
 import { Link } from 'react-router-dom';
-import { useAuthStore } from '@/store/useAuthStore';
-import ImageSwiperContainer from '../ImageSwiper/ImageSwiperContainer';
+import styled from 'styled-components';
 import { register } from 'swiper/element/bundle';
+import StateBadge from './../../atoms/StateBadge/StateBadge';
 
 register();
 

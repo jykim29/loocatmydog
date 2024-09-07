@@ -1,7 +1,7 @@
+import { FormEvent, useEffect, useRef, useState } from 'react';
 import { Form, Link, useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { useChatRoomData } from './useChatRoomData';
-import React, { FormEvent, useEffect, useRef, useState } from 'react';
 import pb from '@/api/pocketbase';
 import { useAuthStore } from '@/store/useAuthStore';
 import setChatRead from './setChatRead';

@@ -1,8 +1,9 @@
-import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
-import { useInView } from 'framer-motion';
-import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { Link, useLoaderData } from 'react-router-dom';
 import styled from 'styled-components';
+import { useInView } from 'framer-motion';
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 
 import { queryClient } from '@/app/App';
 import A11yHidden from '@/components/A11yHidden/A11yHidden';
@@ -26,7 +27,6 @@ import {
   getPlaceQueryOptions,
   setDailyPopup,
 } from '@/utils';
-import { createPortal } from 'react-dom';
 import * as S from './StyledMain';
 
 const shortcutMenuObject = [

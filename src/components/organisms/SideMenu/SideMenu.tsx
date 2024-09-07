@@ -1,11 +1,10 @@
+import { Link } from 'react-router-dom';
+import styled from 'styled-components';
+import { motion } from 'framer-motion';
 import pb from '@/api/pocketbase';
 import UserProfile from '@/components/molecules/UserProfile/UserProfile';
 import { useAuthStore } from '@/store/useAuthStore';
 import useModalControlStore from '@/store/useModalControl';
-import { motion } from 'framer-motion';
-import React from 'react';
-import { Link } from 'react-router-dom';
-import styled from 'styled-components';
 
 const StyledDimmed = styled(motion.div)`
   position: absolute;

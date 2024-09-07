@@ -1,12 +1,10 @@
 import { Link, useNavigate } from 'react-router-dom';
-import styled from 'styled-components';
-import LogoInline from '@/components/atoms/Logo/LogoInline';
-import HeartButton from '@/components/atoms/HeartButton/HeartButton';
 import Calendar from '@/components/atoms/Calendar/Calendar';
-import React from 'react';
-import SearchInput from '../SearchInput/SearchInput';
-import useModalControlStore from '@/store/useModalControl';
+import LogoInline from '@/components/atoms/Logo/LogoInline';
 import { useAuthStore } from '@/store/useAuthStore';
+import useModalControlStore from '@/store/useModalControl';
+import styled from 'styled-components';
+import SearchInput from '../SearchInput/SearchInput';
 
 // type = 'step' | 'main' | 'logo'  | 'place' | 'popup' | 'back'
 export interface HeaderProps {

@@ -1,7 +1,7 @@
 import styled, { CSSProperties } from 'styled-components';
 import { register } from 'swiper/element/bundle';
 import ImageSwiperSlide from './ImageSwiperSlide';
-import React, { ChangeEventHandler } from 'react';
+import { ChangeEventHandler } from 'react';
 import { PaginationOptions } from 'swiper/types';
 
 /*

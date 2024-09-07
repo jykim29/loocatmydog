@@ -1,22 +1,16 @@
+import { useEffect, useState } from 'react';
+import { useLoaderData, useNavigate } from 'react-router-dom';
+import styled from 'styled-components';
+import { format } from 'date-fns';
+import { RequestPayParams, RequestPayResponse } from 'iamport-typings';
+import pb from '@/api/pocketbase';
 import Button from '@/components/atoms/Button/Button';
 import CheckBox from '@/components/atoms/CheckBox/CheckBox';
 import PaymentCard from '@/components/molecules/PaymentCard/PaymentCard';
 import ReservationInfo from '@/components/organisms/ReservationInfo/ReservationInfo';
-import { useEffect, useState } from 'react';
-import styled from 'styled-components';
-import { RequestPayParams, RequestPayResponse } from 'iamport-typings';
 import { useAuthStore } from '@/store/useAuthStore';
-import pb from '@/api/pocketbase';
-import {
-  Link,
-  Navigate,
-  redirect,
-  useLoaderData,
-  useNavigate,
-} from 'react-router-dom';
-import { maskingName } from '@/utils';
 import useReservationStore from '@/store/useReservationStore';
-import { format, getDay, getMonth, getWeek } from 'date-fns';
+import { maskingName } from '@/utils';
 
 //style지정
 const StyledPaymentContainer = styled.div`
@@ -80,7 +74,7 @@ const StyledBanner = styled.div`
   block-size: 90px;
 `;
 
-const Payment = () => {
+export const Payment = () => {
   const placeData = useLoaderData() as any;
   const { reservation } = useReservationStore();
   const reservationData = reservation.reservationData as any;
@@ -252,5 +246,3 @@ const Payment = () => {
     </StyledPaymentContainer>
   );
 };
-
-export default Payment;

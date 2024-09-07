@@ -1,9 +1,9 @@
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { useChatListData } from './useChatListData';
-import React, { useEffect, useState } from 'react';
 import { useAuthStore } from '@/store/useAuthStore';
 import pb from '@/api/pocketbase';
-import { useNavigate } from 'react-router-dom';
 
 const StyledChatList = styled.div`
   display: flex;
