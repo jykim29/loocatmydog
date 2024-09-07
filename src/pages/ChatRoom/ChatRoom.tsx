@@ -85,7 +85,7 @@ const StyledChatRoom = styled.div`
   }
 `;
 
-const ChatRoom = () => {
+export const ChatRoom = () => {
   // 로그인 유저 정보
   const currentUserData = useAuthStore.getState().user;
   const currentUserId = currentUserData?.id;
@@ -217,5 +217,3 @@ const ChatRoom = () => {
     </StyledChatRoom>
   );
 };
-
-export default ChatRoom;

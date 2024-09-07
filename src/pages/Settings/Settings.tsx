@@ -24,7 +24,7 @@ const StyledSettingsBox = styled.div`
   }
 `;
 
-const Settings = () => {
+export const Settings = () => {
   const navigate = useNavigate();
 
   const handleSignOut = () => {
@@ -62,5 +62,3 @@ const Settings = () => {
     </StyledSettingsBox>
   );
 };
-
-export default Settings;

@@ -1,3 +1,4 @@
+import HeartButton from '@/components/atoms/HeartButton/HeartButton';
 import MyPlaceList from '@/components/molecules/MyPlaceList/MyPlaceList';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
@@ -25,13 +26,11 @@ const HeartList = ({ data }: HeartListProps) => {
       {data?.map((item: any) => (
         <StyledHeartItem key={item.id} to={`/place_detail/${item.id}`}>
           <MyPlaceList
-            id={item.id}
             src={item.photo}
-            like={true}
             title={item.title}
-          >
-            {item.address}
-          </MyPlaceList>
+            address={item.address}
+            action={<HeartButton id={item.id} />}
+          />
         </StyledHeartItem>
       ))}
     </StyledHeartListBox>

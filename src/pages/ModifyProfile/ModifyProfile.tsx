@@ -113,7 +113,7 @@ const StyledAddressBox = styled.div`
   }
 `;
 
-const ModifyProfile = () => {
+export const ModifyProfile = () => {
   //이미지 바꾸는 함수
   const [changeImg, setChangeImg] = useState<string>('');
   const [record, setRecord] = useState<UsersCreate | {}>({});
@@ -354,9 +354,7 @@ const ModifyProfile = () => {
   );
 };
 
-export default ModifyProfile;
-
-export async function edit({ request }: { request: any }) {
+export async function modifyProfileAction({ request }: { request: any }) {
   const user = useAuthStore.getState().user;
   const data = await request.formData();
   const record = await pb.from('users').getOne(user?.id);

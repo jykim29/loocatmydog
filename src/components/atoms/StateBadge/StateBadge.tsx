@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
 import styled from 'styled-components';
 
 interface StateBadgeBoxProps {
@@ -17,6 +17,11 @@ const StyledStateBadgeBox = styled.span<StateBadgeBoxProps>`
     props.$mode === 'normal'
       ? `${props.theme.colors.orange}`
       : `${props.theme.colors.white}`};
+  cursor: pointer;
+
+  &:hover {
+    filter: brightness(1.1);
+  }
 `;
 
 interface StateBadgeProps {

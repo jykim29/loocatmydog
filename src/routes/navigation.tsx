@@ -1,20 +1,7 @@
+import { RouteObject } from 'react-router-dom';
 import { queryClient } from '@/app/App';
 import { HeaderProps } from '@/components/molecules/Header/Header';
-import AddPet, { addPetFormAction } from '@/pages/AddPet/AddPet';
-import ChatRoom from '@/pages/ChatRoom/ChatRoom';
-import ModifyProfile, { edit } from '@/pages/ModifyProfile/ModifyProfile';
-import MyPage from '@/pages/MyPage/MyPage';
-import Settings from '@/pages/Settings/Settings';
-import Stories from '@/pages/Stories/Stories';
-import StoryWrite, { storyFormAction } from '@/pages/StoriesWrite/StoryWrite';
-
-import ChatList from '@/pages/ChatList/ChatList';
 import NotFoundPage from '@/pages/NotFoundPage/NotFoundPage';
-import Payment from '@/pages/Payment/Payment';
-import PlaceDetail from '@/pages/PlaceDetail/PlaceDetail';
-import { loader as detail } from '@/pages/PlaceDetail/loader';
-import ReservationDone from '@/pages/ReservationDone/ReservationDone';
-import { RouteObject } from 'react-router-dom';
 
 type NavigationRouteObject = RouteObject & {
   headerType?: [HeaderProps['type'], HeaderProps['title']];
@@ -60,10 +47,6 @@ export const navigationItems: NavigationRouteObject[] = [
     withAuthorization: true,
   },
   {
-    // query parameter 종류
-    // filterType = range | mine | bookmark
-    // filterType=range라면 => &startDate=yyMMdd&endDate=yyMMdd
-    // sortType = distance | popular | price
     path: '/place_list',
     async lazy() {
       const { Component, loader } = await import('@/pages/PlaceList');
@@ -98,26 +81,32 @@ export const navigationItems: NavigationRouteObject[] = [
   },
   {
     path: '/place_detail/:id',
-    element: <PlaceDetail />,
+    async lazy() {
+      const { PlaceDetail: Component, loader } = await import(
+        '@/pages/PlaceDetail'
+      );
+      return { Component, loader };
+    },
     headerType: ['place', null],
-    loader: detail,
-    withAuthorization: true,
-  },
-  {
-    path: '/reservation_list/:id',
-    element: '',
-    headerType: ['logo', null],
     withAuthorization: true,
   },
   {
     path: '/payment/:id',
-    element: <Payment />,
-    loader: detail,
+    async lazy() {
+      const { loader } = await import('@/pages/PlaceDetail');
+      const { Payment: Component } = await import('@/pages/Payment/Payment');
+      return { Component, loader };
+    },
     withAuthorization: true,
   },
   {
     path: '/reservation_done/:id',
-    element: <ReservationDone />,
+    async lazy() {
+      const { ReservationDone: Component } = await import(
+        '@/pages/ReservationDone/ReservationDone'
+      );
+      return { Component };
+    },
     headerType: ['popup', null],
     withAuthorization: true,
   },
@@ -125,22 +114,33 @@ export const navigationItems: NavigationRouteObject[] = [
   // 종명님
   {
     path: '/stories',
-    element: <Stories />,
+    async lazy() {
+      const { Stories: Component } = await import('@/pages/Stories/Stories');
+      return { Component };
+    },
     headerType: ['logo', null],
     withAuthorization: true,
   },
   {
     path: '/stories/post',
-    element: <StoryWrite />,
+    async lazy() {
+      const { StoryWrite: Component, storyFormAction: action } = await import(
+        '@/pages/StoriesWrite/StoryWrite'
+      );
+      return { Component, action };
+    },
     headerType: ['popup', null],
-    action: storyFormAction,
     withAuthorization: true,
   },
   {
     path: '/review/post/:id',
-    element: <StoryWrite />,
+    async lazy() {
+      const { StoryWrite: Component, storyFormAction: action } = await import(
+        '@/pages/StoriesWrite/StoryWrite'
+      );
+      return { Component, action };
+    },
     headerType: ['popup', null],
-    action: storyFormAction,
     withAuthorization: true,
   },
   {
@@ -151,13 +151,19 @@ export const navigationItems: NavigationRouteObject[] = [
   },
   {
     path: '/chat_list',
-    element: <ChatList />,
+    async lazy() {
+      const { ChatList: Component } = await import('@/pages/ChatList/ChatList');
+      return { Component };
+    },
     headerType: ['back', '채팅 목록'],
     withAuthorization: true,
   },
   {
     path: '/chat_room/:id',
-    element: <ChatRoom />,
+    async lazy() {
+      const { ChatRoom: Component } = await import('@/pages/ChatRoom/ChatRoom');
+      return { Component };
+    },
     headerType: ['back', '플레이스'],
     // action: chatroomFormAction,
     withAuthorization: true,
@@ -166,22 +172,32 @@ export const navigationItems: NavigationRouteObject[] = [
   // 다영님
   {
     path: '/mypage',
-    element: <MyPage />,
+    async lazy() {
+      const { MyPage: Component } = await import('@/pages/MyPage/MyPage');
+      return { Component };
+    },
     headerType: ['popup', '마이 페이지'],
     withAuthorization: true,
   },
   {
     path: '/add_mypet',
-    element: <AddPet />,
+    async lazy() {
+      const { AddPet: Component, addPetFormAction: action } = await import(
+        '@/pages/AddPet/AddPet'
+      );
+      return { Component, action };
+    },
     headerType: ['back', '반려동물 추가'],
-    action: addPetFormAction,
     withAuthorization: true,
   },
   {
     path: '/edit_my_profile',
-    element: <ModifyProfile />,
+    async lazy() {
+      const { ModifyProfile: Component, modifyProfileAction: action } =
+        await import('@/pages/ModifyProfile/ModifyProfile');
+      return { Component, action };
+    },
     headerType: ['back', '프로필 변경'],
-    action: edit,
     withAuthorization: true,
   },
   {
@@ -195,7 +211,10 @@ export const navigationItems: NavigationRouteObject[] = [
   },
   {
     path: '/settings',
-    element: <Settings />,
+    async lazy() {
+      const { Settings: Component } = await import('@/pages/Settings/Settings');
+      return { Component };
+    },
     headerType: ['logo', null],
     withAuthorization: true,
   },

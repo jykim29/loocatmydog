@@ -1,4 +1,4 @@
-import { MouseEventHandler } from 'react';
+import { Fragment } from 'react';
 import styled from 'styled-components';
 
 const StyledTabBox = styled.div`
@@ -6,89 +6,76 @@ const StyledTabBox = styled.div`
   flex-direction: row;
   justify-content: center;
   border-bottom: 1px solid ${(props) => props.theme.colors.lineColorGray};
-  padding-inline: 10px;
-  padding-block: 15px;
+
   gap: 30px;
 
   & input {
-    appearance: none;
-    margin: 0;
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
   }
 `;
 
 interface TabBoxLabelProps {
-  $mode: 'front' | 'after';
+  $isActive: boolean;
 }
 
-const StyledPresentTabLabel = styled.label<TabBoxLabelProps>`
-  ${(props) => props.theme.fontStyles.textSemiboldBase}
+const StyledTabLabel = styled.label<TabBoxLabelProps>`
   padding-inline: 30px;
   padding-block: 15px;
   color: ${(props) =>
-    props.$mode === 'after'
-      ? `${props.theme.colors.textGray}`
-      : `${props.theme.colors.textBlack}`};
+    props.$isActive
+      ? `${props.theme.colors.textBlack}`
+      : `${props.theme.colors.textGray}`};
   border-bottom: ${(props) =>
-    props.$mode === 'front'
+    props.$isActive
       ? `2px solid ${props.theme.colors.orange}`
-      : 'none'};
-`;
+      : `2px solid transparent`};
+  font-weight: ${(props) =>
+    props.$isActive
+      ? props.theme.fontWeight.semiBold
+      : props.theme.fontWeight.regular};
+  cursor: pointer;
 
-const StyledPreviousTabLabel = styled.label<TabBoxLabelProps>`
-  ${(props) => props.theme.fontStyles.textSemiboldBase}
-  padding-inline: 30px;
-  padding-block: 15px;
-  color: ${(props) =>
-    props.$mode === 'front'
-      ? `${props.theme.colors.textGray}`
-      : `${props.theme.colors.textBlack}`};
-  border-bottom: ${(props) =>
-    props.$mode === 'after'
-      ? `2px solid ${props.theme.colors.orange}`
-      : 'none'};
+  &:hover {
+    color: ${(props) => props.theme.colors.textBlack};
+    border-bottom: 2px solid ${(props) => props.theme.colors.orange};
+  }
 `;
 
 interface TabBoxProps {
-  mode: 'front' | 'after';
-  front: '진행 예약' | '스토리';
-  after: '지난 예약' | '내가 쓴 글';
-  onClick?: MouseEventHandler<HTMLLabelElement>;
+  menuList: string[];
+  currentTab: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   [key: string]: any;
 }
 
-const Tab = ({ mode, front, after, onClick, ...restProps }: TabBoxProps) => {
+const Tab = ({ menuList, currentTab, onChange, ...restProps }: TabBoxProps) => {
   return (
     <StyledTabBox {...restProps}>
-      <div>
-        <StyledPresentTabLabel
-          $mode={mode}
-          htmlFor="presentBook"
-          onClick={onClick}
-        >
-          {front}
-        </StyledPresentTabLabel>
-        <input
-          type="radio"
-          name="books"
-          id="presentBook"
-          defaultChecked={mode === 'front'}
-        />
-      </div>
-      <div>
-        <StyledPreviousTabLabel
-          $mode={mode}
-          htmlFor="previousBook"
-          onClick={onClick}
-        >
-          {after}
-        </StyledPreviousTabLabel>
-        <input
-          type="radio"
-          name="books"
-          id="previousBook"
-          defaultChecked={mode === 'after'}
-        />
-      </div>
+      {menuList.map((menu, index) => (
+        <Fragment key={index}>
+          <StyledTabLabel
+            $isActive={currentTab === menu}
+            htmlFor={`menu-${index}`}
+          >
+            {menu}
+          </StyledTabLabel>
+          <input
+            type="radio"
+            name="tab"
+            id={`menu-${index}`}
+            value={menu}
+            onChange={onChange}
+          />
+        </Fragment>
+      ))}
     </StyledTabBox>
   );
 };

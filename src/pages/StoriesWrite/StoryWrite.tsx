@@ -84,7 +84,7 @@ const StyledStoryWrite = styled.div`
 // multi imageFiles container
 const imageFiles: File[] = [];
 
-const StoryWrite = () => {
+export const StoryWrite = () => {
   // 게시물 작성 유형
   const type = getFirstPathName();
 
@@ -220,8 +220,6 @@ const StoryWrite = () => {
     </StyledStoryWrite>
   );
 };
-
-export default StoryWrite;
 
 // submit action 함수
 export async function storyFormAction({ request }: { request: any }) {

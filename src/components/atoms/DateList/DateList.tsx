@@ -1,6 +1,5 @@
 import styled from 'styled-components';
 import StateBadge from '../StateBadge/StateBadge';
-import React from 'react';
 
 //type 정의
 interface DateListProps {
@@ -17,6 +16,7 @@ const StyledDateList = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  min-inline-size: 50px;
   font-weight: ${(props) => props.theme.fontWeight.bold};
   color: ${(props) => props.theme.colors.textBlack};
   font-size: ${(props) => props.theme.fontSizes.nameTitle};
@@ -54,7 +54,7 @@ const DateList = ({
       <span className="date">
         {date.slice(5, 7)}/{date.slice(8)}
       </span>
-      {review ? (
+      {dDay === 'past' ? (
         <StateBadge mode={mode} isActive onClick={onClick}>
           {state}
         </StateBadge>

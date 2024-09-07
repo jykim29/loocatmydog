@@ -18,7 +18,7 @@ const StyledReservationDone = styled.div`
   }
 `;
 
-const ReservationDone = () => {
+export const ReservationDone = () => {
   const navigate = useNavigate();
   const { state } = useLocation();
   function handleClick() {
@@ -48,5 +48,3 @@ const ReservationDone = () => {
     </StyledReservationDone>
   );
 };
-
-export default ReservationDone;

@@ -23,11 +23,8 @@ const StyledButtonContainer = styled.div`
   justify-content: space-between;
 `;
 
-const PlaceDetail = () => {
+export const PlaceDetail = () => {
   const { resetDateRange } = useDateRangeStore();
-  useEffect(() => {
-    return () => resetDateRange();
-  }, []);
   const { reservation } = useReservationStore();
   const isSelect = !!reservation.reservationData;
   const placeData = useLoaderData() as any;
@@ -47,6 +44,10 @@ const PlaceDetail = () => {
       '안녕하세요.'
     );
   };
+
+  useEffect(() => {
+    return () => resetDateRange();
+  }, []);
 
   return (
     <>
@@ -100,5 +101,3 @@ const PlaceDetail = () => {
     </>
   );
 };
-
-export default PlaceDetail;

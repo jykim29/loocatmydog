@@ -1,9 +1,15 @@
+import { useEffect, useMemo, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import styled from 'styled-components';
+import { eq } from 'typed-pocketbase';
+import pb from '@/api/pocketbase';
+import DateList from '@/components/atoms/DateList/DateList';
+import MyPlaceList from '@/components/molecules/MyPlaceList/MyPlaceList';
 import Tab from '@/components/molecules/Tab/Tab';
 import { useAuthStore } from '@/store/useAuthStore';
-import React, { useEffect, useState } from 'react';
-import styled from 'styled-components';
-import useReservationData from './useReservationData';
-import { Link } from 'react-router-dom';
+import convertDate from '@/utils/convertDate';
+import getDateDiff from '@/utils/getDateDiff';
+import getPbImageURL from '@/utils/getPbImageURL';
 
 const StyledReservations = styled.div`
   inline-size: 100%;
@@ -68,72 +74,113 @@ const StyledReservations = styled.div`
   }
 `;
 
+const tabMenuList = ['진행 예약', '지난 예약'];
+
 export const Component = () => {
   // 로그인 유저 정보
   const currentUserData = useAuthStore.getState().user;
   const currentUserId = currentUserData?.id;
-
-  // 렌더링 모드 상태
-  const [modeState, setModeState] = useState<'front' | 'after'>('front');
-  const [items, setItems] = useState<(React.JSX.Element | null)[]>([]);
-  const [newItems, setNewItems] = useState<(React.JSX.Element | null)[]>([]);
-
-  // 렌더링 모드 변경 이벤트
-  const handleMode = () => {
-    if (modeState === 'front') {
-      setModeState('after');
-    } else {
-      setModeState('front');
+  const [tabValue, setTabValue] = useState(tabMenuList[0]);
+  const [reservations, setReservations] = useState<{ [key: string]: any }[]>(
+    []
+  );
+  const filteredReservations = useMemo(() => {
+    if (tabValue === '지난 예약') {
+      console.log(
+        reservations.filter(
+          (item) => getDateDiff(item.minDate, item.maxDate) === 'past'
+        )
+      );
+      return reservations.filter(
+        (item) => getDateDiff(item.minDate, item.maxDate) === 'past'
+      );
     }
+    return reservations;
+  }, [tabValue, reservations]);
+  const navigate = useNavigate();
+  const handleChangeTab = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.currentTarget;
+    setTabValue(value);
   };
 
-  // 데이터 받기
-
-  const { data, isLoading } = useReservationData(currentUserId);
-
   useEffect(() => {
-    if (isLoading) return;
-    if (data) {
-      setItems(data.response);
-    }
-  }, [data, isLoading]);
-
-  useEffect(() => {
-    if (data) {
-      if (modeState === 'front') {
-        setItems(data.response);
-      } else {
-        setItems(data.pastResponse);
+    const getReservations = async () => {
+      try {
+        const response = await pb.from('reservation').getFullList({
+          select: {
+            expand: {
+              placeId: true,
+              userId: true,
+            },
+          },
+          filter: eq('userId', currentUserId),
+          requestKey: null,
+        });
+        return response;
+      } catch (error) {
+        console.log(error);
       }
-    }
-  }, [modeState]);
-
-  const nullTemplate = (
-    <div className="nullTemplate">
-      <b>아직 예약이 없습니다</b>
-      <span>지금 바로 봐주개냥을 이용해보세요.</span>
-      <Link to={'/place_list'}>예약하기</Link>
-    </div>
-  );
-
-  useEffect(() => {
-    if (items) {
-      const newArr = items.filter((item) => item !== null);
-      setNewItems(newArr);
-    }
-  }, [items]);
+    };
+    getReservations().then((res) => {
+      if (res) setReservations(res);
+    });
+  }, []);
 
   return (
     <StyledReservations>
       <h2>예약 내역</h2>
       <Tab
-        mode={modeState}
-        front={'진행 예약'}
-        after={'지난 예약'}
-        onClick={handleMode}
+        menuList={tabMenuList}
+        currentTab={tabValue}
+        onChange={handleChangeTab}
       ></Tab>
-      {newItems.length > 0 ? null : nullTemplate}
-      <ul>{items}</ul>
+      <ul>
+        {filteredReservations.length > 0 ? (
+          filteredReservations.map(
+            ({ id, placeId, minDate, maxDate, reviewed, expand }) => {
+              const placeData = expand.placeId;
+              const dDayText = getDateDiff(
+                new Date(minDate),
+                new Date(maxDate)
+              );
+              const placeImageUrl = getPbImageURL(
+                placeData.collectionId,
+                placeData.id,
+                placeData.photo[0],
+                '500x0'
+              );
+              const badgeState = reviewed ? '후기보기' : '후기쓰기';
+              return (
+                <MyPlaceList
+                  key={id}
+                  title={placeData.title}
+                  address={placeData.address}
+                  dDay={dDayText}
+                  src={placeImageUrl}
+                  action={
+                    <DateList
+                      mode={'fill'}
+                      dDay={dDayText}
+                      state={badgeState}
+                      review={true}
+                      date={convertDate(new Date(minDate))}
+                      onClick={() => {
+                        if (!reviewed) navigate(`/review/post/${placeId}`);
+                      }}
+                    />
+                  }
+                />
+              );
+            }
+          )
+        ) : (
+          <div className="nullTemplate">
+            <b>아직 예약이 없습니다</b>
+            <span>지금 바로 봐주개냥을 이용해보세요.</span>
+            <Link to={'/place_list'}>예약하기</Link>
+          </div>
+        )}
+      </ul>
     </StyledReservations>
   );
 };

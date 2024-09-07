@@ -68,10 +68,10 @@ const StyledInputBox = styled.div`
   }
 `;
 
-let imageUrl: File[] = [];
+const imageUrl: File[] = [];
 const user = useAuthStore.getState().user;
 
-const AddPet = () => {
+export const AddPet = () => {
   const [type, setType] = useState<'default' | 'link' | 'picture'>('default');
   const [changeImg, setChangeImg] = useState('');
   const [isChecked, setIsChecked] = useState(false);
@@ -252,8 +252,6 @@ const AddPet = () => {
     </Form>
   );
 };
-
-export default AddPet;
 
 export async function addPetFormAction({ request }: { request: any }) {
   const formData = await request.formData();

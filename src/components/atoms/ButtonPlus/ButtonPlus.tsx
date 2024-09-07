@@ -5,6 +5,11 @@ interface ButtonPlusProps {
   path?: string;
 }
 
+const StyledButtonPlusWrapper = styled.div`
+  position: absolute;
+  right: 80px;
+`;
+
 const StyledButtonPlus = styled(Link).attrs({
   'aria-label': '글작성 페이지 이동',
 })`
@@ -13,13 +18,20 @@ const StyledButtonPlus = styled(Link).attrs({
   width: 45px;
   height: 45px;
   border: none;
-  position: sticky;
-  left: 80%;
-  bottom: 10%;
+  position: fixed;
+  bottom: 100px;
+  transition: all 0.2s;
+  &:hover {
+    filter: brightness(1.1);
+  }
 `;
 
 const ButtonPlus = ({ path = '/' }: ButtonPlusProps) => {
-  return <StyledButtonPlus to={path} />;
+  return (
+    <StyledButtonPlusWrapper>
+      <StyledButtonPlus to={path} />
+    </StyledButtonPlusWrapper>
+  );
 };
 
 export default ButtonPlus;

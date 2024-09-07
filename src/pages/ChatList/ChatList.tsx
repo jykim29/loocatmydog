@@ -14,7 +14,7 @@ const StyledChatList = styled.div`
   }
 `;
 
-const ChatList = () => {
+export const ChatList = () => {
   // 로그인 유저 정보
   const currentUserData = useAuthStore.getState().user;
   const currentUserId = currentUserData?.id;
@@ -56,5 +56,3 @@ const ChatList = () => {
 
   return <StyledChatList>{chatRooms}</StyledChatList>;
 };
-
-export default ChatList;

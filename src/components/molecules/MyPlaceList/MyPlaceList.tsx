@@ -1,20 +1,12 @@
-import DateList from '@/components/atoms/DateList/DateList';
-import HeartButton from '@/components/atoms/HeartButton/HeartButton';
-import React from 'react';
 import styled from 'styled-components';
+
 //type 선언
 interface MyPlaceListProps {
-  id?: string;
   title: string;
-  children: string;
+  address: string;
   dDay?: string;
-  date?: string;
   src?: string;
-  like?: boolean;
-  state?: string;
-  review?: boolean;
-  mode?: boolean;
-  onClick?: React.MouseEventHandler<HTMLSpanElement> | undefined;
+  action: React.ReactNode;
 }
 
 //styled 컴포넌트
@@ -59,31 +51,13 @@ const StyledMyPlaceListContainer = styled.div<{ $dDay: string | undefined }>`
 `;
 
 function MyPlaceList({
-  id: placeId = '',
-  title = '테스트',
-  children = '테스트입니다',
-  like = false,
-  review = false,
-  mode = true,
-  date = 'yyyy.mm.dd',
+  title = '',
+  address = '',
   dDay,
-  state = '당일가능',
   src = '/images/story_sample3.jpg',
-  onClick,
+  action,
   ...restProps
 }: MyPlaceListProps) {
-  const isLike = like ? (
-    <HeartButton id={placeId} />
-  ) : (
-    <DateList
-      mode={mode ? 'normal' : 'fill'}
-      date={date}
-      dDay={dDay}
-      review={review}
-      state={state}
-      onClick={onClick}
-    />
-  );
   return (
     <StyledMyPlaceListContainer $dDay={dDay} {...restProps}>
       <figure className="placeImage">
@@ -92,10 +66,9 @@ function MyPlaceList({
 
       <div className="textWrap">
         <p>{title}</p>
-        <span>{children}</span>
+        <span>{address}</span>
       </div>
-
-      {isLike}
+      {action}
     </StyledMyPlaceListContainer>
   );
 }

@@ -1,3 +1,6 @@
+import { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import styled from 'styled-components';
 import pb from '@/api/pocketbase';
 import PaymentCard from '@/components/molecules/PaymentCard/PaymentCard';
 import ProfileCard from '@/components/molecules/ProfileCard/ProfileCard';
@@ -5,9 +8,6 @@ import ProfileListLink from '@/components/molecules/ProfileListLink/ProfileListL
 import UserProfile from '@/components/molecules/UserProfile/UserProfile';
 import { useAuthStore } from '@/store/useAuthStore';
 import getPbImageURL from '@/utils/getPbImageURL';
-import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import styled from 'styled-components';
 
 const StyledMyPage = styled.div`
   display: flex;
@@ -61,7 +61,7 @@ const PaymentPlusBox = styled.div`
   }
 `;
 
-const MyPage = () => {
+export const MyPage = () => {
   const navigate = useNavigate();
 
   const handleProfileCardClick = () => {
@@ -169,5 +169,3 @@ const MyPage = () => {
     </StyledMyPage>
   );
 };
-
-export default MyPage;

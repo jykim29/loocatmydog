@@ -1,7 +1,7 @@
 import A11yHidden from '@/components/A11yHidden/A11yHidden';
 import { useAuthStore } from '@/store/useAuthStore';
 import { toggleBookmark } from '@/utils';
-import React, { useId, useState } from 'react';
+import { useId, useState } from 'react';
 import styled from 'styled-components';
 
 interface HeartButtonProps {
