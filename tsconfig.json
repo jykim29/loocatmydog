@@ -25,10 +25,7 @@
     "types": ["iamport-typings"]
   },
   "include": ["src/**/*"],
-  "exclude": [
-    "node_modules"
-    // "src/**/*.stories.tsx"
-  ],
+  "exclude": ["node_modules", "src/**/*.stories.tsx"],
   "references": [
     {
       "path": "./tsconfig.node.json"
