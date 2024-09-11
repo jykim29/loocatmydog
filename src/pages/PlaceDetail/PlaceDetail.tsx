@@ -88,7 +88,6 @@ export const PlaceDetail = () => {
       <PlaceSection title="반려동물 선택">
         <AnimalPick
           reservationForm={reservationForm}
-          setReservationForm={setReservationForm}
           onChange={handleChangeInput}
           resetInput={resetInput}
         />
