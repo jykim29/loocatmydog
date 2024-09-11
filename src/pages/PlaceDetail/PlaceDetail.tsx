@@ -1,6 +1,3 @@
-import { useEffect } from 'react';
-import { Link, useLoaderData } from 'react-router-dom';
-import styled from 'styled-components';
 import Button from '@/components/atoms/Button/Button';
 import PlaceSection from '@/components/molecules/PlaceSection/PlaceSection';
 import AnimalPick from '@/components/organisms/AnimalPick/AnimalPick';
@@ -12,10 +9,12 @@ import PlaceTitleSection from '@/components/organisms/PlaceTitle/PlaceTitle';
 import ServiceCanUse from '@/components/organisms/ServiceCanUse/ServiceCanUse';
 import ServicePrice from '@/components/organisms/ServicePrice/ServicePrice';
 import SwiperProfile from '@/components/organisms/SwiperProfile/SwiperProfile';
+import createChatRoom from '@/pages/ChatRoom/createChatRoom';
 import { useAuthStore } from '@/store/useAuthStore';
 import useDateRangeStore from '@/store/useDateRange';
-import useReservationStore from '@/store/useReservationStore';
-import createChatRoom from '@/pages/ChatRoom/createChatRoom';
+import { useEffect, useState } from 'react';
+import { Link, useLoaderData } from 'react-router-dom';
+import styled from 'styled-components';
 
 const StyledButtonContainer = styled.div`
   padding: 0 20px;
@@ -23,15 +22,35 @@ const StyledButtonContainer = styled.div`
   justify-content: space-between;
 `;
 
+type InitialReservationFormState = {
+  require: string;
+  etc: string;
+  petId: string;
+};
+const initialReservationFormState = {
+  require: '',
+  etc: '',
+  petId: '',
+};
+
 export const PlaceDetail = () => {
-  const { resetDateRange } = useDateRangeStore();
-  const { reservation } = useReservationStore();
-  const isSelect = !!reservation.reservationData;
+  const { dateRange, resetDateRange } = useDateRangeStore();
+  const [reservationForm, setReservationForm] =
+    useState<InitialReservationFormState>(initialReservationFormState);
   const placeData = useLoaderData() as any;
   const userData = useAuthStore.getState().user;
   const reviewCount = placeData.expand['boards(placeId)']
     ? placeData.expand['boards(placeId)'].length
     : 0;
+  const isValid =
+    reservationForm.require.length > 0 && reservationForm.petId.length > 0;
+  const handleChangeInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const { name, value } = e.currentTarget;
+    setReservationForm((prev) => ({ ...prev, [name]: value }));
+  };
+  const resetInput = () => {
+    setReservationForm(initialReservationFormState);
+  };
 
   // 문의하기
   const handleInquire = (e: MouseEvent) => {
@@ -67,7 +86,12 @@ export const PlaceDetail = () => {
         <DatePick minDate={placeData.minDate} maxDate={placeData.maxDate} />
       </PlaceSection>
       <PlaceSection title="반려동물 선택">
-        <AnimalPick />
+        <AnimalPick
+          reservationForm={reservationForm}
+          setReservationForm={setReservationForm}
+          onChange={handleChangeInput}
+          resetInput={resetInput}
+        />
       </PlaceSection>
       <PlaceSection title="이용 금액">
         <ServicePrice data={placeData} />
@@ -89,11 +113,11 @@ export const PlaceDetail = () => {
           문의
         </Button>
         <Button
-          as={isSelect ? Link : null}
+          as={isValid ? Link : null}
           size="65%"
-          mode={isSelect ? 'normal' : 'disabled'}
+          mode={isValid ? 'normal' : 'disabled'}
           to={`/payment/${placeData.id}`}
-          style={{ textAlign: 'center' }}
+          state={{ ...reservationForm, date: dateRange, userId: userData?.id }}
         >
           예약하기
         </Button>

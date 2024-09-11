@@ -97,6 +97,7 @@ const StyledButton = styled.button<StyledButtonProps>`
     font-size: 12px;
     font-style: normal;
     font-weight: 600;
+    text-align: center;
     ${(props) => {
       if (props.$mode === 'chat') {
         return `

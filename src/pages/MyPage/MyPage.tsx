@@ -3,11 +3,12 @@ import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import pb from '@/api/pocketbase';
 import PaymentCard from '@/components/molecules/PaymentCard/PaymentCard';
-import ProfileCard from '@/components/molecules/ProfileCard/ProfileCard';
+import ProfileCardRadioButton from '@/components/molecules/ProfileCard/ProfileCardRadioButton';
 import ProfileListLink from '@/components/molecules/ProfileListLink/ProfileListLink';
 import UserProfile from '@/components/molecules/UserProfile/UserProfile';
 import { useAuthStore } from '@/store/useAuthStore';
 import getPbImageURL from '@/utils/getPbImageURL';
+import ProfileCard from '@/components/molecules/ProfileCard/ProfileCard';
 
 const StyledMyPage = styled.div`
   display: flex;
@@ -44,7 +45,17 @@ const ProfileCardSection = styled.div`
   padding-inline: 20px;
   padding-block-end: 25px;
 `;
+const ProfileCardList = styled.ul`
+  display: flex;
+  justify-content: space-between;
+  inline-size: 100%;
+  gap: 10px;
+  flex-wrap: wrap;
 
+  & li {
+    flex: 1;
+  }
+`;
 const PaymentPlusBox = styled.div`
   display: flex;
   justify-content: flex-end;
@@ -86,7 +97,6 @@ export const MyPage = () => {
       });
 
       setPetData(record.expand?.petId);
-      console.log(record.expand?.petId);
     };
     fetchPetData();
   }, [user]);
@@ -100,9 +110,7 @@ export const MyPage = () => {
       />
       <ProfileCardSection>
         <span className="petSpan">반려동물</span>
-        {!petData ? (
-          ''
-        ) : (
+        {petData && (
           <AddPetPlusBox to={'/add_mypet'}>
             <button className="addPetBtn">
               추가등록
@@ -111,32 +119,28 @@ export const MyPage = () => {
           </AddPetPlusBox>
         )}
 
-        <ul>
+        <ProfileCardList>
           {!petData ? (
             <li>
-              <ProfileCard
-                onClick={handleProfileCardClick}
-                isChecked={false}
-                profile={false}
-                name={'현재 없음'}
-              >
-                {'반려동물을 등록해주세요'}
+              <ProfileCard onClick={handleProfileCardClick}>
+                <span className="name">반려동물을 등록해주세요</span>
               </ProfileCard>
             </li>
           ) : (
             petData.map((data: any) => (
               <li key={data.id}>
                 <ProfileCard
-                  profile={true}
-                  name={data.petName}
                   src={getPbImageURL(data.collectionId, data.id, data.image)}
                 >
-                  {data.breed} {`${data.weight}kg`}
+                  <span className="name">{data.petName}</span>
+                  <span className="description">
+                    {`${data.breed}, ${data.weight}kg`}
+                  </span>
                 </ProfileCard>
               </li>
             ))
           )}
-        </ul>
+        </ProfileCardList>
       </ProfileCardSection>
       <ProfileListLink />
       <ProfileListLink

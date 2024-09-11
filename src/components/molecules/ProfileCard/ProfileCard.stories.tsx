@@ -1,10 +1,10 @@
 import { StoryObj } from '@storybook/react';
-import ProfileCard from './ProfileCard';
+import ProfileCardRadioButton from './ProfileCardRadioButton';
 import { BrowserRouter } from 'react-router-dom';
 
 /**@type{import('@storybook/react').Meta} */
 export default {
-  component: ProfileCard,
+  component: ProfileCardRadioButton,
   decorators: [
     (Story: any) => (
       <BrowserRouter>
@@ -14,7 +14,7 @@ export default {
   ],
 };
 
-type Story = StoryObj<typeof ProfileCard>;
+type Story = StoryObj<typeof ProfileCardRadioButton>;
 
 export const 기본표시: Story = {
   args: {

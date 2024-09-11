@@ -38,6 +38,7 @@ const StyledLabel = styled.label<StyleCheckBoxLabelProps>`
       ? props.theme.colors.textBlack
       : props.theme.colors.textDarkGray};
   ${(props) => props.theme.fontStyles.textRegularBase};
+  cursor: pointer;
 `;
 
 const StyledCheckBox = styled.input`

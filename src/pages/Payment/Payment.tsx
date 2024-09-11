@@ -1,15 +1,14 @@
 import { useEffect, useState } from 'react';
-import { useLoaderData, useNavigate } from 'react-router-dom';
+import { useLoaderData, useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { format } from 'date-fns';
+import { differenceInCalendarDays, format } from 'date-fns';
 import { RequestPayParams, RequestPayResponse } from 'iamport-typings';
 import pb from '@/api/pocketbase';
 import Button from '@/components/atoms/Button/Button';
 import CheckBox from '@/components/atoms/CheckBox/CheckBox';
-import PaymentCard from '@/components/molecules/PaymentCard/PaymentCard';
+import PaymentMethodRadioButton from '@/components/molecules/PaymentMethodButton/PaymentMethodRadioButton';
 import ReservationInfo from '@/components/organisms/ReservationInfo/ReservationInfo';
 import { useAuthStore } from '@/store/useAuthStore';
-import useReservationStore from '@/store/useReservationStore';
 import { maskingName } from '@/utils';
 
 //style지정
@@ -43,8 +42,12 @@ const StyledPaymentContainer = styled.div`
     color: ${(props) => props.theme.colors.textBlack};
   }
   & .innerTitle {
-    ${(props) => props.theme.fontStyles.textSemiboldBase}
+    ${(props) => props.theme.fontStyles.textSemiboldBase};
     color: ${(props) => props.theme.colors.textBlack};
+    & > span {
+      ${(props) => props.theme.fontStyles.textSemiboldBase}
+      color: ${(props) => props.theme.colors.orange}
+    }
   }
   & .orange {
     color: ${(props) => props.theme.colors.orange};
@@ -67,6 +70,10 @@ const StyledPaymentContainer = styled.div`
     ${(props) => props.theme.fontStyles.textRegularMd}
     color: ${(props) => props.theme.colors.textDarkGray};
   }
+  & .payments {
+    display: flex;
+    gap: 10px;
+  }
 `;
 const StyledBanner = styled.div`
   background: url('/images/paymentBanner.jpg') no-repeat 50% 50% / cover;
@@ -74,72 +81,93 @@ const StyledBanner = styled.div`
   block-size: 90px;
 `;
 
+interface PgItem {
+  id: number;
+  label: RequestPayParams['pay_method'];
+  kor_label: string;
+  name: RequestPayParams['pg'];
+  imageSrc: string;
+}
+
+const pgList: PgItem[] = [
+  {
+    id: 0,
+    label: 'kakaopay',
+    kor_label: '카카오페이',
+    name: `kakaopay.${import.meta.env.VITE_PORTONE_KAKAOPAY_STORE_ID}`,
+    imageSrc: '/images/payments/kakaopay_icon.png',
+  },
+  {
+    id: 1,
+    label: 'tosspay',
+    kor_label: '토스페이',
+    name: 'tosspay',
+    imageSrc: '/images/payments/tosspay_icon.png',
+  },
+];
+
 export const Payment = () => {
   const placeData = useLoaderData() as any;
-  const { reservation } = useReservationStore();
-  const reservationData = reservation.reservationData as any;
+  const { state } = useLocation();
   const userData = useAuthStore.getState().user;
+  const [pgItem, setPgItem] = useState<PgItem>(pgList[0]);
   const [isChecked, setIsChecked] = useState(false);
   const navigate = useNavigate();
-
-  const [minDate, maxDate] = reservationData.date;
-  const { require, etc, petId } = reservationData;
   const petData = userData?.expand.petId.find(
-    (value: any) => value.id === petId[0]
+    (value: any) => value.id === state.petId
   );
+  let currentPrice = placeData.priceSmall;
+  let currentWeight = '소형';
+  if (petData.weight >= 7 && petData.weight < 15) {
+    currentPrice = placeData.priceMiddle;
+    currentWeight = '중형';
+  }
+  if (petData.weight >= 15) {
+    currentPrice = placeData.priceLarge;
+    currentWeight = '대형';
+  }
+  const differenceDays =
+    differenceInCalendarDays(state.date[1], state.date[0]) + 1;
+  const totalPrice = currentPrice * differenceDays;
 
-  useEffect(() => {
-    const jquery = document.createElement('script');
-    jquery.src = 'https://code.jquery.com/jquery-1.12.4.min.js';
-    const iamport = document.createElement('script');
-    iamport.src = 'https://cdn.iamport.kr/v1/iamport.js';
-    document.head.appendChild(jquery);
-    document.head.appendChild(iamport);
-    return () => {
-      document.head.removeChild(jquery);
-      document.head.removeChild(iamport);
-    };
-  }, []);
-
-  const onClickPayment = () => {
+  const handleClickRequestPay = () => {
+    alert('handleClickRequestPay 호출');
     if (!window.IMP) return;
     if (!isChecked) return;
 
     const { IMP } = window;
     IMP.init(import.meta.env.VITE_PORTONE_STORE_CODE);
-    const kakaoPayStoreId = import.meta.env.VITE_PORTONE_KAKAOPAY_STORE_ID;
-
-    const userData = useAuthStore.getState().user;
-
     const data: RequestPayParams = {
-      pg: `kakaopay.${kakaoPayStoreId}`,
+      pg: pgItem.name,
       pay_method: 'card',
-      merchant_uid: `mid_${new Date().getTime()}`,
-      name: `봐주개냥 테스트 결제: ${placeData.title}`,
-      amount: placeData.priceSmall, // 가격
+      merchant_uid: `order_${crypto.randomUUID()}`,
+      name: `테스트 결제: ${placeData.title}`,
+      amount: totalPrice, // 가격
       buyer_name: userData?.name,
       buyer_tel: userData?.phone,
       buyer_email: userData?.email,
       buyer_addr: `${userData?.address} ${userData?.addressDetail}`,
+      m_redirect_url: `${location.href}/progress`,
     };
 
     IMP.request_pay(data, callback);
+    alert('결제요청함');
   };
 
   const callback = async (response: RequestPayResponse) => {
-    const { success = true, error_msg } = response;
+    const { success, error_msg } = response;
     if (success) {
       const userData = useAuthStore.getState().user;
       const reservationData = {
         placeId: placeData.id,
         userId: userData?.id,
-        petId: petId,
-        minDate,
-        maxDate,
+        petId: state.petId,
+        minDate: state.date[0],
+        maxDate: state.date[1],
         reviewed: false,
         price: placeData.priceSmall,
-        required: require,
-        etc: etc,
+        required: state.require,
+        etc: state.etc,
       };
 
       await pb.collection('reservation').create(reservationData);
@@ -148,10 +176,10 @@ export const Payment = () => {
       return navigate(`/reservation_done/${placeData.id}`, {
         replace: true,
         state: {
-          minDate,
-          maxDate,
-          require,
-          etc,
+          minDate: state.date[0],
+          maxDate: state.date[1],
+          require: state.require,
+          etc: state.etc,
         },
       });
     } else {
@@ -159,9 +187,25 @@ export const Payment = () => {
     }
   };
   //checkbox handler
-  function handleCheckbox() {
+  const handleCheckbox = () => {
     setIsChecked(!isChecked);
-  }
+  };
+
+  const handleChangePayment = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.currentTarget;
+    const pgItem = pgList.find((item) => item.label === value);
+    if (!pgItem) return;
+    setPgItem(pgItem);
+  };
+
+  useEffect(() => {
+    const iamport = document.createElement('script');
+    iamport.src = 'https://cdn.iamport.kr/v1/iamport.js';
+    document.head.appendChild(iamport);
+    return () => {
+      document.head.removeChild(iamport);
+    };
+  }, []);
   return (
     <StyledPaymentContainer>
       <StyledBanner />
@@ -172,23 +216,13 @@ export const Payment = () => {
         </span>
         <div className="borderLine"></div>
         <ReservationInfo
-          mindate={format(minDate, 'MM월 dd일')}
-          maxdate={format(maxDate, 'MM월 dd일')}
-          require={require}
-          etc={etc}
+          mindate={format(state.date[0], 'MM월 dd일')}
+          maxdate={format(state.date[1], 'MM월 dd일')}
+          require={state.require}
+          etc={state.etc}
         />
-        <div className="borderLine"></div>
-        <div className="payInfo">
-          <p>총 금액</p>
-          <p>{placeData.priceSmall}</p>
-        </div>
       </div>
       <div className="innerWrapper">
-        <div className="payInfo">
-          <p>총 금액</p>
-          <p className="orange">{placeData.priceSmall}</p>
-        </div>
-        <div className="borderLine"></div>
         <ul className="infoDetail">
           <li>
             <span>예약자 성함</span>
@@ -205,21 +239,35 @@ export const Payment = () => {
         </ul>
       </div>
       <div className="innerWrapper">
-        <p className="innerTitle">결제 수단</p>
+        <p className="innerTitle">
+          결제 수단 - <span>{pgItem.kor_label}</span>
+        </p>
         <div className="borderLine"></div>
-        <PaymentCard userPay={false} name="등록하기" />
+        <div className="payments">
+          {pgList.map((pgItem) => (
+            <PaymentMethodRadioButton
+              key={pgItem.id}
+              pgImageSrc={pgItem.imageSrc}
+              value={pgItem.label}
+              onChange={handleChangePayment}
+              defaultChecked={pgItem.id === 0}
+            />
+          ))}
+        </div>
         <div className="borderLine" style={{ margin: '20px 0 0 0' }}></div>
       </div>
       <div className="innerWrapper">
         <div className="payInfo">
           <p>총 금액</p>
-          <p className="orange">{placeData.priceSmall}</p>
+          <p className="orange">{totalPrice.toLocaleString('ko-KR')} 원</p>
         </div>
         <div className="borderLine"></div>
         <ul className="infoDetail">
           <li>
-            <span>소형 1마리 x 1일</span>
-            <span className="price">{placeData.priceSmall}원</span>
+            <span>{`${currentWeight} 1마리 x ${differenceDays}일`}</span>
+            <span className="price">
+              {totalPrice.toLocaleString('ko-KR')} 원
+            </span>
           </li>
         </ul>
       </div>
@@ -234,11 +282,9 @@ export const Payment = () => {
           <li>예약 시작 24시간 이내: 환불 불가</li>
         </ul>
         <Button
-          // as={Link}
           size="100%"
           mode={isChecked ? 'normal' : 'disabled'}
-          // to="/reservation_done"
-          onClick={onClickPayment}
+          onClick={handleClickRequestPay}
         >
           결제하기
         </Button>

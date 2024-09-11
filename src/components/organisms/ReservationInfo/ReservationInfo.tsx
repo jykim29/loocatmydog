@@ -37,8 +37,15 @@ const StyledReservationInfo = styled.div`
     color: ${(props) => props.theme.colors.textBlack};
   }
   & .textarea {
-    ${(props) => props.theme.fontStyles.textRegularSm}
+    display: flex;
+    gap: 10px;
+    ${(props) => props.theme.fontStyles.textRegularSm};
     color: ${(props) => props.theme.colors.textDarkGray};
+    & .label {
+      ${(props) => props.theme.fontStyles.textRegularMd};
+      color: ${(props) => props.theme.colors.textBlack};
+      inline-size: 80px;
+    }
   }
 `;
 
@@ -61,8 +68,14 @@ const ReservationInfo = ({
           <p>{maxdate} </p>
         </div>
       </div>
-      <div className="textarea">{require}</div>
-      <div className="textarea">{etc}</div>
+      <div className="textarea">
+        <span className="label">요청 사항</span>
+        <span>{require}</span>
+      </div>
+      <div className="textarea">
+        <span className="label">기타 요청사항</span>
+        <span>{etc}</span>
+      </div>
     </StyledReservationInfo>
   );
 };

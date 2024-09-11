@@ -1,20 +1,22 @@
-import { useEffect, useRef, useState } from 'react';
-import { Form } from 'react-router-dom';
-import styled from 'styled-components';
-import { PetResponse } from '@/@types/database';
 import Button from '@/components/atoms/Button/Button';
 import ProfileImage from '@/components/atoms/ProfileImage/ProfileImage';
 import InputTextArea from '@/components/molecules/InputTextArea/InputTextArea';
-import ProfileCard from '@/components/molecules/ProfileCard/ProfileCard';
-import useReservationStore from '@/store/useReservationStore';
-import { sizeWeight } from '@/utils';
-import getPbImageURL from '@/utils/getPbImageURL';
+import ProfileCardRadioButton from '@/components/molecules/ProfileCard/ProfileCardRadioButton';
 import { useAuthStore } from '@/store/useAuthStore';
-import useDateRangeStore from '@/store/useDateRange';
+import getPbImageURL from '@/utils/getPbImageURL';
+import { useRef } from 'react';
+import styled from 'styled-components';
 
-//test
+interface AnimalPickProps {
+  reservationForm: {
+    require: string;
+    etc: string;
+    petId: string;
+  };
+  onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  resetInput: () => void;
+}
 
-//type 지정
 type modeProps = 'normal' | 'gray' | 'disabled' | 'kakao' | 'google' | 'chat';
 
 //styled 컴포넌트
@@ -80,163 +82,109 @@ const AnimalProfile = ({
   src: string;
   [key: string]: any;
 }) => {
-  return (
-    <ProfileImage
-      as="button"
-      type="button"
-      style={{ border: '2px solid #f1f1f1' }}
-      src={src}
-      {...restProps}
-    />
-  );
+  return <ProfileImage as="button" type="button" src={src} {...restProps} />;
 };
 
-const AnimalPick = () => {
-  const [petSelect, setPetSelect] = useState<Array<string | null>>([]);
-  const { dateRange } = useDateRangeStore();
-  const userData = useAuthStore.getState().user;
-  const userId = useAuthStore.getState().user?.id;
+const AnimalPick = ({
+  reservationForm,
+  onChange: handleChangeInput,
+  resetInput,
+}: AnimalPickProps) => {
+  const { user: userData } = useAuthStore();
+  const myPetList = userData?.expand.petId;
   const modalRef = useRef<HTMLDialogElement>(null);
-  const [petList, setPetList] = useState<PetResponse[] | undefined>(
-    userData?.expand?.petId
-  );
-  const [petId, setPetId] = useState<PetResponse>(Object);
-  const [isChecked, setIsChecked] = useState(false);
-  const [mode, setMode] = useState<modeProps>('disabled');
-  const prevState = {
-    petId: [],
-    require: '',
-    etc: '',
+  const isValid =
+    reservationForm.require.length > 0 && reservationForm.petId.length > 0;
+
+  const handleClickCloseModal = () => {
+    if (modalRef.current) {
+      resetInput();
+      modalRef.current.close();
+    }
   };
-  const [inputTextValue, setInputTextValue] = useState({
-    petId: [],
-    require: '',
-    etc: '',
-  });
-  const { setReservation } = useReservationStore();
-
-  //pet validation
-  useEffect(() => {
-    function petValidation() {
-      if (isChecked && inputTextValue.require) {
-        setMode('normal');
-      } else if (inputTextValue.require === '' || !isChecked) {
-        setMode('disabled');
-      }
-    }
-    petValidation();
-  }, [inputTextValue.require, isChecked]);
-
-  function handleChange(e: React.ChangeEvent<HTMLElement>) {
-    setIsChecked(!isChecked);
-  }
-
-  function handleTextChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
-    const { name, value } = e.target;
-    setInputTextValue((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
-    if (petSelect === null) {
-      setPetSelect([petId.id]);
-    } else if (!petSelect.includes(petId.id)) {
-      setPetSelect((prevPetSelect: any) => [...prevPetSelect, petId.id]);
-    }
-  }
-  function handleSubmit(e: React.FormEvent) {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!isValid) return;
+    console.log(reservationForm);
     modalRef.current?.close();
-    setIsChecked(false);
-    // setInputTextValue(prevState);
-
-    setReservation({
-      ...inputTextValue,
-      petId: petSelect,
-      date: dateRange,
-      userId: userId,
-    });
-  }
+  };
   return (
     <>
       <StyledAnimalPickModal as="dialog" ref={modalRef}>
-        <Form className="modalInner" onSubmit={handleSubmit}>
+        <form className="modalInner" onSubmit={handleSubmit}>
           <div className="modalHeader">
             <button
               className="closeButton"
               type="button"
-              onClick={() => {
-                modalRef.current?.close();
-                setIsChecked(false);
-                setInputTextValue(prevState);
-              }}
+              onClick={handleClickCloseModal}
             ></button>
             <span className="modalTitle">반려동물</span>
           </div>
           <div className="profileWrapper">
-            <ProfileCard
-              src={getPbImageURL(petId.collectionId, petId.id, petId.image)}
-              name={petId.petName}
-              isChecked={isChecked}
-              onChange={handleChange}
-            >
-              <p>{petId.breed}</p>
-              <p>
-                {sizeWeight(petId.weight)} {petId.weight}kg
-              </p>
-            </ProfileCard>
+            {myPetList.map((petData: any) => {
+              return (
+                <ProfileCardRadioButton
+                  key={petData.id}
+                  name="petId"
+                  src={getPbImageURL(
+                    petData.collectionId,
+                    petData.id,
+                    petData.image
+                  )}
+                  value={petData.id}
+                  onChange={handleChangeInput}
+                >
+                  <span className="name">{petData.petName}</span>
+                  <span className="description">
+                    {`${petData.breed}, ${petData.weight}kg`}
+                  </span>
+                </ProfileCardRadioButton>
+              );
+            })}
           </div>
           <InputTextArea
             requestCheck={'필수'}
             name="require"
             isRequired={true}
-            inputValue={inputTextValue.require}
-            onChange={handleTextChange}
+            inputValue={reservationForm.require}
+            onChange={handleChangeInput}
           />
           <InputTextArea
             requestCheck={'선택'}
             request="기타 요청 사항"
             name="etc"
-            inputValue={inputTextValue.etc}
-            onChange={handleTextChange}
+            inputValue={reservationForm.etc}
+            onChange={handleChangeInput}
           />
-          <Button type={'submit'} size={'100%'} isRounded={false} mode={mode}>
+          <Button
+            type="submit"
+            size="100%"
+            isRounded={false}
+            mode={isValid ? 'normal' : 'disabled'}
+          >
             저장 하기
           </Button>
-        </Form>
+        </form>
       </StyledAnimalPickModal>
       <StyledAnimalPickSection>
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-          }}
-        >
-          <StyledPetListContainer>
-            {userData?.petId?.length === 0 ? (
-              <>
-                <p className="info">반려동물을 추가해주세요</p>
-                <StyledPlusButton></StyledPlusButton>
-              </>
-            ) : (
-              petList?.map((item) => (
-                <AnimalProfile
-                  src={getPbImageURL(item.collectionId, item.id, item.image)}
-                  key={item.id}
-                  onClick={() => {
-                    setPetId(item);
-                    modalRef.current?.showModal();
-                  }}
-                  style={
-                    petSelect.includes(item.id)
-                      ? { border: '2px solid #FFB62B ' }
-                      : { border: '2px solid #F1F1F1 ' }
-                  }
-                />
-              ))
-            )}
-          </StyledPetListContainer>
-        </div>
+        <StyledPetListContainer>
+          {userData?.petId?.length === 0 ? (
+            <>
+              <p className="info">반려동물을 추가해주세요</p>
+              <StyledPlusButton />
+            </>
+          ) : (
+            myPetList?.map((item: any) => (
+              <AnimalProfile
+                src={getPbImageURL(item.collectionId, item.id, item.image)}
+                key={item.id}
+                onClick={() => {
+                  modalRef.current?.showModal();
+                }}
+              />
+            ))
+          )}
+        </StyledPetListContainer>
       </StyledAnimalPickSection>
     </>
   );

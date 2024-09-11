@@ -100,6 +100,16 @@ export const navigationItems: NavigationRouteObject[] = [
     withAuthorization: true,
   },
   {
+    path: '/payment/:id/progress',
+    async lazy() {
+      const { PaymentProgress: Component } = await import(
+        '@/pages/Payment/PaymentProgress'
+      );
+      return { Component };
+    },
+    withAuthorization: true,
+  },
+  {
     path: '/reservation_done/:id',
     async lazy() {
       const { ReservationDone: Component } = await import(
